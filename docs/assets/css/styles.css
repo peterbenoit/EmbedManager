@@ -141,6 +141,7 @@ a:hover {
 	color: var(--color-text);
 	display: flex;
 	align-items: center;
+	gap: 8px;
 }
 
 .logo-text {
@@ -216,7 +217,16 @@ a:hover {
 	-webkit-text-fill-color: transparent;
 	background-clip: text;
 	color: transparent;
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.inline-logo {
+	height: 60px;
+	width: auto;
+	vertical-align: middle;
+	margin-right: 10px;
 }
 
 .tagline {
@@ -411,6 +421,16 @@ a:hover {
 
 .footer-links a:hover {
 	color: var(--color-primary);
+}
+
+.footer-logo {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.small-logo {
+	height: 28px;
 }
 
 .footer-author {
