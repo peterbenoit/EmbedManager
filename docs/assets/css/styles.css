@@ -852,6 +852,14 @@ a:hover {
 	color: var(--color-primary);
 }
 
+.preset-btn .note {
+	display: block;
+	font-size: 0.8rem;
+	font-weight: normal;
+	color: var(--color-text-lighter);
+	margin-top: 4px;
+}
+
 /* Responsive adjustments for demo page */
 @media (max-width: 992px) {
 	.demo-container {

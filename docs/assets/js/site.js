@@ -151,7 +151,7 @@ function generateEmbed() {
 }
 
 // Demo page functionality
-function initDemoPage() {
+async function initDemoPage() {
 	const embedForm = document.getElementById('embed-form');
 	const embedType = document.getElementById('embed-type');
 	const embedSrc = document.getElementById('embed-src');
@@ -204,15 +204,43 @@ function initDemoPage() {
 			const type = this.getAttribute('data-type');
 			const src = this.getAttribute('data-src');
 			const title = this.getAttribute('data-title');
+			const requiresKey = this.getAttribute('data-requires-key') === 'true';
 
 			embedType.value = type;
 			embedSrc.value = src;
 			embedTitle.value = title || `${type.charAt(0).toUpperCase() + type.slice(1)} Demo`;
 
 			updateDynamicFields(type);
+
+			// For Google Maps, show a message about requiring an API key
+			if (type === 'maps' || type === 'google-maps') {
+				const apiKeyField = document.getElementById('embed-api-key');
+				if (apiKeyField && requiresKey) {
+					// Don't auto-generate the embed if it requires a key
+					const keyHelp = document.querySelector('#embed-api-key + .help-text');
+					if (keyHelp) {
+						keyHelp.innerHTML = 'Using a restricted API key protects your quota and prevents unauthorized usage. <a href="https://developers.google.com/maps/documentation/embed/get-api-key" target="_blank">Learn more</a>';
+					}
+					apiKeyField.required = true;
+					apiKeyField.focus();
+					return;
+				}
+			}
+
 			generateEmbed();
 		});
 	});
+
+	// Try to load API key if available
+	const apiKey = await loadApiKey();
+
+	// For Google Maps examples, auto-fill the API key field if available
+	if (apiKey) {
+		const apiKeyField = document.getElementById('embed-api-key');
+		if (apiKeyField) {
+			apiKeyField.value = apiKey.trim();
+		}
+	}
 
 	// Update dynamic fields based on embed type
 	function updateDynamicFields(type) {
@@ -251,13 +279,17 @@ function initDemoPage() {
 				break;
 
 			case 'maps':
-				addField('text', 'embed-api-key', 'Google Maps API Key (optional)');
+			case 'google-maps':
+				addField('text', 'embed-api-key', 'Google Maps API Key', '', {
+					required: true,
+					helpText: '<strong>Required:</strong> Using a domain-restricted API key prevents unauthorized usage and protects your quota. <a href="https://developers.google.com/maps/documentation/embed/get-api-key#restrict_key" target="_blank">Learn more about API key security</a>'
+				});
 				break;
 		}
 	}
 
 	// Helper to add dynamic form fields
-	function addField(type, id, label, defaultValue = null, options = null) {
+	function addField(type, id, label, defaultValue = null, options = {}) {
 		const fieldContainer = document.createElement('div');
 		fieldContainer.className = type === 'checkbox' ? 'form-group checkbox' : 'form-group';
 
@@ -305,12 +337,34 @@ function initDemoPage() {
 			input.id = id;
 			input.name = id;
 			if (defaultValue) input.value = defaultValue;
+			if (options.required) input.required = true;
 
 			fieldContainer.appendChild(labelElement);
 			fieldContainer.appendChild(input);
+
+			// Add help text if provided
+			if (options.helpText) {
+				const helpText = document.createElement('small');
+				helpText.className = 'help-text';
+				helpText.innerHTML = options.helpText;
+				fieldContainer.appendChild(helpText);
+			}
 		}
 
 		dynamicFields.appendChild(fieldContainer);
+	}
+
+	// Load Google Maps API key from file if available
+	async function loadApiKey() {
+		try {
+			const response = await fetch('/api.key');
+			if (response.ok) {
+				return await response.text();
+			}
+		} catch (e) {
+			console.log('No API key file available');
+		}
+		return '';
 	}
 
 	// Generate embed
@@ -365,8 +419,13 @@ function initDemoPage() {
 				break;
 
 			case 'maps':
+			case 'google-maps':
 				const apiKey = document.getElementById('embed-api-key')?.value;
-				if (apiKey) attributes += `\n     data-api-key="${apiKey}"`;
+				if (!apiKey) {
+					alert('A Google Maps API key is required.');
+					return;
+				}
+				attributes += `\n     data-api-key="${apiKey}"`;
 				break;
 		}
 
@@ -421,6 +480,7 @@ function initDemoPage() {
 				break;
 
 			case 'maps':
+			case 'google-maps':
 				const apiKey = document.getElementById('embed-api-key')?.value;
 				if (apiKey) container.setAttribute('data-api-key', apiKey);
 				break;

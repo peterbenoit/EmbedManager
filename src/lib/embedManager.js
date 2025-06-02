@@ -169,6 +169,33 @@ class EmbedManager {
 		}
 	}
 
+	// Set up Intersection Observer for lazy loading
+	setupObserver(embeds) {
+		const observer = new IntersectionObserver((entries) => {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					this.lazyLoadEmbed(entry.target);
+					observer.unobserve(entry.target); // Stop observing once loaded
+				}
+			});
+		}, {
+			rootMargin: this.options.rootMargin
+		});
+
+		// Observe each embed container
+		embeds.forEach(embed => {
+			// Add placeholder content
+			if (!embed.innerHTML.trim()) {
+				const type = embed.getAttribute('data-type') || 'content';
+				const placeholder = document.createElement('div');
+				placeholder.className = 'embed-placeholder';
+				placeholder.innerHTML = `<p>Loading ${type} content when visible</p>`;
+				embed.appendChild(placeholder);
+			}
+			observer.observe(embed);
+		});
+	}
+
 	// Helper method to show errors
 	showError(embed, message) {
 		console.error(`EmbedManager Error: ${message}`);
@@ -504,6 +531,13 @@ class EmbedManager {
 			}
 		} catch (error) {
 			this.showError(embed, error.message);
+		}
+	}
+
+	// Process a single container immediately (for demo functionality)
+	processContainer(container) {
+		if (container && container.classList.contains('embed-container')) {
+			this.lazyLoadEmbed(container);
 		}
 	}
 

@@ -377,8 +377,13 @@ class EmbedManager {
 						query = finalSrc.split('maps?q=')[1].split('&')[0];
 					}
 
+					const apiKey = embed.getAttribute('data-api-key');
+					if (!apiKey) {
+						throw new Error('Google Maps requires an API key. Please provide a valid API key in the data-api-key attribute.');
+					}
+
 					if (query) {
-						finalSrc = `https://www.google.com/maps/embed/v1/place?key=${embed.getAttribute('data-api-key') || ''}&q=${query}`;
+						finalSrc = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${query}`;
 					}
 				}
 				break;
@@ -531,6 +536,13 @@ class EmbedManager {
 			}
 		} catch (error) {
 			this.showError(embed, error.message);
+		}
+	}
+
+	// Process a single container immediately (for demo functionality)
+	processContainer(container) {
+		if (container && container.classList.contains('embed-container')) {
+			this.lazyLoadEmbed(container);
 		}
 	}
 
