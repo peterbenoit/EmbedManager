@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examples - EmbedManager</title>
+    <meta name="description" content="Example code snippets and live demonstrations for using EmbedManager with various content types.">
+    <meta name="author" content="Peter Benoit">
+
+    <!-- Favicon -->
+    <link rel="icon" href="assets/images/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/normalize.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/prism.css">
+
+
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <span class="logo-text">EmbedManager</span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <button id="menu-toggle" aria-label="Toggle menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+                <ul id="main-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="documentation.html">Documentation</a></li>
+                    <li><a href="examples.html" class="active">Examples</a></li>
+                    <li><a href="demo.html">Demo</a></li>
+                    <li><a href="https://github.com/peterbenoit/EmbedManager" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="examples-page">
+        <div class="container">
+            <h1>Examples</h1>
+            <p class="intro-text">Explore various ways to embed content with EmbedManager. Each example includes code snippets and a live demonstration.</p>
+
+            <div class="example-tabs">
+                <button class="tab-btn active" data-tab="video">Video</button>
+                <button class="tab-btn" data-tab="social">Social Media</button>
+                <button class="tab-btn" data-tab="audio">Audio</button>
+                <button class="tab-btn" data-tab="code">Code</button>
+                <button class="tab-btn" data-tab="maps">Maps</button>
+                <button class="tab-btn" data-tab="other">Other</button>
+            </div>
+
+            <!-- Video Examples -->
+            <div class="tab-content active" id="video-content">
+                <section class="example-section">
+                    <h2>YouTube Embed</h2>
+                    <div class="example-container">
+                        <div class="example-code">
+                            <pre><code class="language-html">&lt;div class="embed-container"
+     data-type="youtube"
+     data-src="https://www.youtube.com/embed/c8lpI7mGuAc"
+     data-title="YouTube Video"&gt;
+&lt;/div&gt;</code></pre>
+                        </div>
+                        <div class="example-result">
+                            <div class="embed-container"
+                                data-type="youtube"
+                                data-src="https://www.youtube.com/embed/c8lpI7mGuAc"
+                                data-title="YouTube Video">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="example-section">
+                    <h2>Vimeo Embed</h2>
+                    <div class="example-container">
+                        <div class="example-code">
+                            <pre><code class="language-html">&lt;div class="embed-container"
+     data-type="vimeo"
+     data-src="https://player.vimeo.com/video/76979871"
+     data-title="Vimeo Video"&gt;
+&lt;/div&gt;</code></pre>
+                        </div>
+                        <div class="example-result">
+                            <div class="embed-container"
+                                data-type="vimeo"
+                                data-src="https://player.vimeo.com/video/76979871"
+                                data-title="Vimeo Video">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="example-section">
+                    <h2>Twitch Embed</h2>
+                    <div class="example-container">
+                        <div class="example-code">
+                            <pre><code class="language-html">&lt;div class="embed-container"
+     data-type="twitch"
+     data-src="https://player.twitch.tv/?channel=twitchdev&amp;parent=peterbenoit.github.io"
+     data-title="Twitch Channel"&gt;
+&lt;/div&gt;</code></pre>
+                        </div>
+                        <div class="example-result">
+                            <div class="embed-container"
+                                data-type="twitch"
+                                data-src="https://player.twitch.tv/?channel=twitchdev&parent=peterbenoit.github.io"
+                                data-title="Twitch Channel">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Social Media Examples -->
+            <div class="tab-content" id="social-content">
+                <section class="example-section">
+                    <h2>Twitter/X Embed</h2>
+                    <div class="example-container">
+                        <div class="example-code">
+                            <pre><code class="language-html">&lt;div class="embed-container"
+     data-type="twitter"
+     data-src="1631061454281547993"
+     data-title="Twitter Post"
+     data-theme="light"&gt;
+&lt;/div&gt;</code></pre>
+                        </div>
+                        <div class="example-result">
+                            <div class="embed-container"
+                                data-type="twitter"
+                                data-src="1631061454281547993"
+                                data-title="Twitter Post"
+                                data-theme="light">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="example-section">
+                    <h2>Instagram Embed</h2>
+                    <div class="example-container">
+                        <div class="example-code">
+                            <pre><code class="language-html">&lt;div class="embed-container"
+     data-type="instagram"
+     data-src="https://www.instagram.com/p/CpfBrOSO3lL/"
+     data-title="Instagram Post"&gt;
+&lt;/div&gt;</code></pre>
+                        </div>
+                        <div class="example-result">
+                            <div class="embed-container"
+                                data-type="instagram"
+                                data-src="https://www.instagram.com/p/CpfBrOSO3lL/"
+                                data-title="Instagram Post">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="example-section">
+                    <h2>TikTok Embed</h2>
+                    <div class="example-container">
+                        <div class="example-code">
+                            <pre><code class="language-html">&lt;div class="embed-container"
+     data-type="tiktok"
+     data-src="https://www.tiktok.com/@scout2015/video/6718335390845095173"
+     data-title="TikTok Video"&gt;
+&lt;/div&gt;</code></pre>
+                        </div>
+                        <div class="example-result">
+                            <div class="embed-container"
+                                data-type="tiktok"
+                                data-src="https://www.tiktok.com/@scout2015/video/6718335390845095173"
+                                data-title="TikTok Video">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Additional tab content sections would follow a similar pattern -->
+
+            <div class="cta-container">
+                <p>Want to experiment with different embed types and configurations?</p>
+                <a href="demo.html" class="btn btn-primary">Try the Interactive Demo</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="logo-text">EmbedManager</span>
+                </div>
+                <div class="footer-links">
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="documentation.html">Documentation</a></li>
+                        <li><a href="examples.html">Examples</a></li>
+                        <li><a href="demo.html">Demo</a></li>
+                        <li><a href="https://github.com/peterbenoit/EmbedManager">GitHub</a></li>
+                    </ul>
+                </div>
+                <div class="footer-author">
+                    <p>Created by <a href="https://www.uiguy.dev" rel="author" class="seo-author-link">Peter Benoit</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year">2023</span> EmbedManager. Released under the MIT License.</p>
+            </div>
+        </div>
+    </footer>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-markup.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+    <script src="assets/js/embedManager.js"></script>
+    <script src="assets/js/site.js"></script>
+
+    <script>
+        // Tab functionality for examples
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons and content
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+
+                    // Add active class to clicked button
+                    button.classList.add('active');
+
+                    // Show corresponding content
+                    const tabId = button.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-content`).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

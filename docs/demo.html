@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Demo - EmbedManager</title>
+    <meta name="description" content="Try EmbedManager with different services and configurations in this interactive demo.">
+    <meta name="author" content="Peter Benoit">
+
+    <!-- Favicon -->
+    <link rel="icon" href="assets/images/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/normalize.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/prism.css">
+
+
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <span class="logo-text">EmbedManager</span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <button id="menu-toggle" aria-label="Toggle menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+                <ul id="main-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="documentation.html">Documentation</a></li>
+                    <li><a href="examples.html">Examples</a></li>
+                    <li><a href="demo.html" class="active">Demo</a></li>
+                    <li><a href="https://github.com/peterbenoit/EmbedManager" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="demo-page">
+        <div class="container">
+            <h1>Interactive Demo</h1>
+            <p class="intro-text">Try EmbedManager with different services and configurations. Enter your embed details below, and see it in action instantly.</p>
+
+            <div class="demo-container">
+                <div class="demo-controls">
+                    <form id="embed-form">
+                        <div class="form-group">
+                            <label for="embed-type">Embed Type</label>
+                            <select id="embed-type" name="embed-type" required>
+                                <option value="">Select a type</option>
+                                <option value="youtube">YouTube</option>
+                                <option value="vimeo">Vimeo</option>
+                                <option value="twitch">Twitch</option>
+                                <option value="codepen">CodePen</option>
+                                <option value="twitter">Twitter/X</option>
+                                <option value="instagram">Instagram</option>
+                                <option value="tiktok">TikTok</option>
+                                <option value="spotify">Spotify</option>
+                                <option value="soundcloud">SoundCloud</option>
+                                <option value="gist">GitHub Gist</option>
+                                <option value="maps">Google Maps</option>
+                                <option value="website">Website</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="embed-src">Source URL or ID</label>
+                            <input type="text" id="embed-src" name="embed-src" placeholder="https://..." required>
+                            <small class="help-text">Enter the full URL or ID for the content you want to embed.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="embed-title">Title</label>
+                            <input type="text" id="embed-title" name="embed-title" placeholder="My Embedded Content">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label for="embed-width">Width</label>
+                                <input type="text" id="embed-width" name="embed-width" placeholder="100%">
+                            </div>
+                            <div class="form-group half">
+                                <label for="embed-aspect">Aspect Ratio</label>
+                                <select id="embed-aspect" name="embed-aspect">
+                                    <option value="16/9">16:9 (Widescreen)</option>
+                                    <option value="4/3">4:3 (Standard)</option>
+                                    <option value="1/1">1:1 (Square)</option>
+                                    <option value="9/16">9:16 (Vertical)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group checkbox">
+                            <input type="checkbox" id="embed-autoplay" name="embed-autoplay">
+                            <label for="embed-autoplay">Autoplay (where supported)</label>
+                        </div>
+
+                        <!-- Dynamic fields will be inserted here based on embed type -->
+                        <div id="dynamic-fields"></div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Generate Embed</button>
+                            <button type="button" id="reset-demo" class="btn btn-secondary">Reset</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="demo-output">
+                    <h3>Preview</h3>
+                    <div id="embed-preview" class="embed-preview-container">
+                        <div class="placeholder-message">
+                            <p>Your embed will appear here</p>
+                        </div>
+                    </div>
+
+                    <h3>Generated Code</h3>
+                    <pre><code class="language-html" id="code-output">&lt;!-- Fill out the form to generate your embed code --&gt;</code></pre>
+
+                    <button id="copy-code" class="btn btn-small">Copy Code</button>
+                </div>
+            </div>
+
+            <div class="preset-embeds">
+                <h2>Quick Examples</h2>
+                <p>Click on any of these examples to load them in the demo:</p>
+
+                <div class="preset-grid">
+                    <button class="preset-btn" data-type="youtube" data-src="https://www.youtube.com/embed/dQw4w9WgXcQ" data-title="YouTube Demo">
+                        YouTube
+                    </button>
+                    <button class="preset-btn" data-type="vimeo" data-src="https://player.vimeo.com/video/76979871" data-title="Vimeo Demo">
+                        Vimeo
+                    </button>
+                    <button class="preset-btn" data-type="twitter" data-src="1631061454281547993" data-title="Twitter Demo">
+                        Twitter/X
+                    </button>
+                    <button class="preset-btn" data-type="spotify" data-src="https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT" data-title="Spotify Demo">
+                        Spotify
+                    </button>
+                    <button class="preset-btn" data-type="codepen" data-src="https://codepen.io/peterbenoit/pen/" data-title="CodePen Demo">
+                        CodePen
+                    </button>
+                    <button class="preset-btn" data-type="maps" data-src="https://www.google.com/maps?q=Statue+of+Liberty" data-title="Google Maps Demo">
+                        Google Maps
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="logo-text">EmbedManager</span>
+                </div>
+                <div class="footer-links">
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="documentation.html">Documentation</a></li>
+                        <li><a href="examples.html">Examples</a></li>
+                        <li><a href="demo.html">Demo</a></li>
+                        <li><a href="https://github.com/peterbenoit/EmbedManager">GitHub</a></li>
+                    </ul>
+                </div>
+                <div class="footer-author">
+                    <p>Created by <a href="https://www.uiguy.dev" rel="author" class="seo-author-link">Peter Benoit</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year">2023</span> EmbedManager. Released under the MIT License.</p>
+            </div>
+        </div>
+    </footer>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-markup.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+    <script src="assets/js/embedManager.js"></script>
+    <script src="assets/js/site.js"></script>
+
+</body>
+</html>

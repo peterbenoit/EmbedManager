@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - EmbedManager</title>
+    <meta name="description" content="Comprehensive documentation for the EmbedManager library, including installation, configuration, and API reference.">
+    <meta name="author" content="Peter Benoit">
+
+    <!-- Favicon -->
+    <link rel="icon" href="assets/images/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/normalize.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/prism.css">
+
+
+</head>
+<body class="doc-page">
+    <header class="site-header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <span class="logo-text">EmbedManager</span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <button id="menu-toggle" aria-label="Toggle menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+                <ul id="main-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="documentation.html" class="active">Documentation</a></li>
+                    <li><a href="examples.html">Examples</a></li>
+                    <li><a href="demo.html">Demo</a></li>
+                    <li><a href="https://github.com/peterbenoit/EmbedManager" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="doc-container">
+        <aside class="doc-sidebar">
+            <nav class="doc-nav">
+                <h3>Getting Started</h3>
+                <ul>
+                    <li><a href="#installation">Installation</a></li>
+                    <li><a href="#basic-usage">Basic Usage</a></li>
+                    <li><a href="#configuration">Configuration</a></li>
+                </ul>
+                <h3>Supported Services</h3>
+                <ul>
+                    <li><a href="#youtube">YouTube</a></li>
+                    <li><a href="#vimeo">Vimeo</a></li>
+                    <li><a href="#twitch">Twitch</a></li>
+                    <li><a href="#codepen">CodePen</a></li>
+                    <li><a href="#twitter">Twitter/X</a></li>
+                    <li><a href="#instagram">Instagram</a></li>
+                    <li><a href="#tiktok">TikTok</a></li>
+                    <li><a href="#spotify">Spotify</a></li>
+                    <li><a href="#soundcloud">SoundCloud</a></li>
+                    <li><a href="#github">GitHub Gist</a></li>
+                    <li><a href="#maps">Google Maps</a></li>
+                    <li><a href="#website">General Websites</a></li>
+                </ul>
+                <h3>Advanced</h3>
+                <ul>
+                    <li><a href="#api">API Reference</a></li>
+                    <li><a href="#accessibility">Accessibility</a></li>
+                    <li><a href="#performance">Performance Tips</a></li>
+                    <li><a href="#security">Security Considerations</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="doc-content">
+            <h1>EmbedManager Documentation</h1>
+
+            <section id="installation">
+                <h2>Installation</h2>
+                <p>You can include EmbedManager in your project in several ways:</p>
+
+                <h3>Direct Download</h3>
+                <pre><code class="language-html">&lt;script src="path/to/embedManager.js"&gt;&lt;/script&gt;</code></pre>
+
+                <h3>NPM</h3>
+                <pre><code class="language-bash">npm install embed-manager</code></pre>
+                <p>Then import it in your project:</p>
+                <pre><code class="language-javascript">import 'embed-manager';</code></pre>
+
+                <h3>CDN</h3>
+                <pre><code class="language-html">&lt;script src="https://cdn.jsdelivr.net/gh/peterbenoit/EmbedManager@main/dist/embedManager.min.js"&gt;&lt;/script&gt;</code></pre>
+            </section>
+
+            <section id="basic-usage">
+                <h2>Basic Usage</h2>
+                <p>Using EmbedManager is straightforward. Simply add an element with the <code>embed-container</code> class and appropriate data attributes:</p>
+
+                <pre><code class="language-html">&lt;div class="embed-container"
+     data-type="youtube"
+     data-src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+     data-title="YouTube Video"&gt;
+&lt;/div&gt;</code></pre>
+
+                <p>The library will automatically:</p>
+                <ul>
+                    <li>Create the necessary iframe with proper attributes</li>
+                    <li>Lazy load the content when the container comes into view</li>
+                    <li>Handle responsive sizing and aspect ratio</li>
+                </ul>
+            </section>
+
+            <section id="configuration">
+                <h2>Configuration</h2>
+                <p>EmbedManager provides various options through data attributes:</p>
+
+                <h3>Common Attributes</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Attribute</th>
+                            <th>Description</th>
+                            <th>Default</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>data-type</code></td>
+                            <td>The type of embed (youtube, vimeo, twitch, etc.)</td>
+                            <td>Required</td>
+                        </tr>
+                        <tr>
+                            <td><code>data-src</code></td>
+                            <td>The source URL or ID for the embed</td>
+                            <td>Required</td>
+                        </tr>
+                        <tr>
+                            <td><code>data-title</code></td>
+                            <td>Title for the iframe (important for accessibility)</td>
+                            <td>"Untitled Embed"</td>
+                        </tr>
+                        <tr>
+                            <td><code>data-width</code></td>
+                            <td>Width of the container</td>
+                            <td>"100%"</td>
+                        </tr>
+                        <tr>
+                            <td><code>data-height</code></td>
+                            <td>Height of the container (if not using aspect ratio)</td>
+                            <td>Auto (based on aspect ratio)</td>
+                        </tr>
+                        <tr>
+                            <td><code>data-aspect-ratio</code></td>
+                            <td>Aspect ratio of the embed</td>
+                            <td>"16/9"</td>
+                        </tr>
+                        <tr>
+                            <td><code>data-autoplay</code></td>
+                            <td>Whether to autoplay the content when loaded</td>
+                            <td>"false"</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>See the specific service sections below for service-specific attributes.</p>
+            </section>
+
+            <!-- Service-specific sections would continue here -->
+            <section id="youtube">
+                <h2>YouTube</h2>
+                <p>EmbedManager uses the privacy-enhanced version of YouTube embeds by default (youtube-nocookie.com).</p>
+
+                <h3>Example</h3>
+                <pre><code class="language-html">&lt;div class="embed-container"
+     data-type="youtube"
+     data-src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+     data-title="YouTube Video"
+     data-autoplay="false"&gt;
+&lt;/div&gt;</code></pre>
+
+                <h3>YouTube-specific Attributes</h3>
+                <p>EmbedManager automatically adds these parameters to YouTube embeds:</p>
+                <ul>
+                    <li><code>rel=0</code> - Prevents showing related videos from other channels</li>
+                    <li><code>modestbranding=1</code> - Reduces YouTube branding on the player</li>
+                </ul>
+            </section>
+
+            <!-- Additional sections for each service would follow -->
+
+            <section id="api">
+                <h2>API Reference</h2>
+                <p>EmbedManager exposes a global instance that you can use to interact with embeds programmatically:</p>
+
+                <h3>Methods</h3>
+
+                <h4><code>processContainer(element)</code></h4>
+                <p>Manually processes a container element, creating the embed immediately:</p>
+                <pre><code class="language-javascript">// Get a container element
+const container = document.querySelector('.my-embed');
+
+// Process it immediately
+window.EmbedManager.processContainer(container);</code></pre>
+
+                <h4><code>addEmbed(element)</code></h4>
+                <p>Adds a new embed container to be observed and loaded when visible:</p>
+                <pre><code class="language-javascript">// Create a new container
+const newContainer = document.createElement('div');
+newContainer.className = 'embed-container';
+newContainer.setAttribute('data-type', 'youtube');
+newContainer.setAttribute('data-src', 'https://www.youtube.com/embed/dQw4w9WgXcQ');
+document.body.appendChild(newContainer);
+
+// Add it to the observer
+window.EmbedManager.addEmbed(newContainer);</code></pre>
+            </section>
+
+            <!-- More sections would follow -->
+        </main>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="logo-text">EmbedManager</span>
+                </div>
+                <div class="footer-links">
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="documentation.html">Documentation</a></li>
+                        <li><a href="examples.html">Examples</a></li>
+                        <li><a href="demo.html">Demo</a></li>
+                        <li><a href="https://github.com/peterbenoit/EmbedManager">GitHub</a></li>
+                    </ul>
+                </div>
+                <div class="footer-author">
+                    <p>Created by <a href="https://www.uiguy.dev" rel="author" class="seo-author-link">Peter Benoit</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year">2023</span> EmbedManager. Released under the MIT License.</p>
+            </div>
+        </div>
+    </footer>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-markup.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+    <script src="assets/js/embedManager.js"></script>
+    <script src="assets/js/site.js"></script>
+
+</body>
+</html>

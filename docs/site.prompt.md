@@ -1,0 +1,1 @@
+Lets start to build out the website, it should be styled nicely, choose something other than tailwind. It should look and feel like a standard library documentation website with documentation on the library, examples of code, and a demo area where a user can try out different embeds from different services.

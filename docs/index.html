@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmbedManager - Lazy Loading Embed Library</title>
+    <meta name="description" content="A versatile JavaScript library for embedding YouTube, Vimeo, Twitch, CodePen, Twitter, Instagram and more with lazy loading and responsive design.">
+    <meta name="author" content="Peter Benoit">
+
+    <!-- Favicon -->
+    <link rel="icon" href="assets/images/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/normalize.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/prism.css">
+
+
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="EmbedManager - Lazy Loading Embed Library">
+    <meta property="og:description" content="A versatile JavaScript library for embedding YouTube, Vimeo, Twitch, CodePen, Twitter, Instagram and more with lazy loading and responsive design.">
+    <meta property="og:image" content="assets/images/social-preview.jpg">
+    <meta property="og:url" content="https://peterbenoit.github.io/EmbedManager/">
+    <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <span class="logo-text">EmbedManager</span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <button id="menu-toggle" aria-label="Toggle menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+                <ul id="main-menu">
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="documentation.html">Documentation</a></li>
+                    <li><a href="examples.html">Examples</a></li>
+                    <li><a href="demo.html">Demo</a></li>
+                    <li><a href="https://github.com/peterbenoit/EmbedManager" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>EmbedManager</h1>
+                <p class="tagline">A lightweight JavaScript library for effortlessly embedding content with lazy loading</p>
+                <div class="cta-buttons">
+                    <a href="documentation.html" class="btn btn-primary">Get Started</a>
+                    <a href="https://github.com/peterbenoit/EmbedManager" class="btn btn-secondary" target="_blank">View on GitHub</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <h2>Features</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📱</div>
+                        <h3>Responsive Design</h3>
+                        <p>Automatically adjusts embeds to fit any screen size with proper aspect ratio preservation.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Lazy Loading</h3>
+                        <p>Improves page performance by loading embeds only when they're visible in the viewport.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Enhanced Security</h3>
+                        <p>Includes proper sandbox attributes and referrer policies to keep your site secure.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">♿</div>
+                        <h3>Accessibility</h3>
+                        <p>Built with accessibility in mind, including ARIA attributes and proper focus management.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌐</div>
+                        <h3>Multiple Services</h3>
+                        <p>Supports YouTube, Vimeo, Twitch, CodePen, Twitter, Instagram, TikTok, and more.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔧</div>
+                        <h3>Customizable</h3>
+                        <p>Easily configure embeds with data attributes for precise control over appearance and behavior.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="quick-start">
+            <div class="container">
+                <h2>Quick Start</h2>
+                <div class="code-example">
+                    <h3>1. Include the script</h3>
+                    <pre><code class="language-html">&lt;script src="embedManager.js"&gt;&lt;/script&gt;</code></pre>
+
+                    <h3>2. Add your embed container</h3>
+                    <pre><code class="language-html">&lt;div class="embed-container"
+     data-type="youtube"
+     data-src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+     data-title="YouTube Video"&gt;
+&lt;/div&gt;</code></pre>
+
+                    <h3>3. That's it! The embed will load when scrolled into view</h3>
+                    <div class="embed-preview">
+                        <div class="embed-container" data-type="youtube" data-src="https://www.youtube.com/embed/dQw4w9WgXcQ" data-title="YouTube Video"></div>
+                    </div>
+                </div>
+                <div class="cta-center">
+                    <a href="documentation.html" class="btn btn-primary">View Full Documentation</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="supported-services">
+            <div class="container">
+                <h2>Supported Services</h2>
+                <div class="services-grid">
+                    <div class="service-logo">YouTube</div>
+                    <div class="service-logo">Vimeo</div>
+                    <div class="service-logo">Twitch</div>
+                    <div class="service-logo">CodePen</div>
+                    <div class="service-logo">Twitter/X</div>
+                    <div class="service-logo">Instagram</div>
+                    <div class="service-logo">TikTok</div>
+                    <div class="service-logo">Spotify</div>
+                    <div class="service-logo">SoundCloud</div>
+                    <div class="service-logo">GitHub Gist</div>
+                    <div class="service-logo">Google Maps</div>
+                    <div class="service-logo">General Websites</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="logo-text">EmbedManager</span>
+                </div>
+                <div class="footer-links">
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="documentation.html">Documentation</a></li>
+                        <li><a href="examples.html">Examples</a></li>
+                        <li><a href="demo.html">Demo</a></li>
+                        <li><a href="https://github.com/peterbenoit/EmbedManager">GitHub</a></li>
+                    </ul>
+                </div>
+                <div class="footer-author">
+                    <p>Created by <a href="https://www.uiguy.dev" rel="author" class="seo-author-link">Peter Benoit</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year">2023</span> EmbedManager. Released under the MIT License.</p>
+            </div>
+        </div>
+    </footer>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-markup.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+    <script src="assets/js/embedManager.js"></script>
+    <script src="assets/js/site.js"></script>
+</body>
+</html>
