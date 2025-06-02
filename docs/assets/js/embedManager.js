@@ -308,10 +308,16 @@ class EmbedManager {
 				// Instagram embeds require their script
 				this.loadExternalScript('https://www.instagram.com/embed.js', 'instagram-embed');
 
-				// Make sure URL ends with /embed for proper embedding
-				if (!finalSrc.endsWith('/embed') && !finalSrc.includes('/embed/')) {
-					finalSrc = finalSrc.replace(/\/$/, '') + '/embed';
+				// Handle different Instagram URL formats
+				if (finalSrc.includes('instagram.com/p/') || finalSrc.includes('instagram.com/reel/')) {
+					// Add query parameters if not already present
+					if (!finalSrc.includes('?')) {
+						finalSrc = `${finalSrc}?utm_source=ig_embed&utm_campaign=loading`;
+					} else if (!finalSrc.includes('utm_source=ig_embed')) {
+						finalSrc = `${finalSrc}&utm_source=ig_embed&utm_campaign=loading`;
+					}
 				}
+				// No longer append /embed as we're using Instagram's preferred blockquote method
 				break;
 
 			case 'tiktok':
@@ -377,13 +383,8 @@ class EmbedManager {
 						query = finalSrc.split('maps?q=')[1].split('&')[0];
 					}
 
-					const apiKey = embed.getAttribute('data-api-key');
-					if (!apiKey) {
-						throw new Error('Google Maps requires an API key. Please provide a valid API key in the data-api-key attribute.');
-					}
-
 					if (query) {
-						finalSrc = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${query}`;
+						finalSrc = `https://www.google.com/maps/embed/v1/place?key=${embed.getAttribute('data-api-key') || ''}&q=${query}`;
 					}
 				}
 				break;
@@ -410,7 +411,7 @@ class EmbedManager {
 		const src = embed.getAttribute('data-src');
 
 		// Special handling for embeds that don't use iframes
-		if (type === 'twitter' || type === 'x' || type === 'gist' || type === 'github') {
+		if (type === 'twitter' || type === 'x' || type === 'gist' || type === 'github' || type === 'instagram') {
 			this.handleSpecialEmbed(embed, type);
 			return;
 		}
@@ -506,10 +507,10 @@ class EmbedManager {
 					tweetContainer.setAttribute('data-lang', embed.getAttribute('data-lang') || 'en');
 					tweetContainer.setAttribute('data-theme', embed.getAttribute('data-theme') || 'light');
 
-					const link = document.createElement('a');
-					link.href = tweetUrl;
-					link.textContent = title;
-					tweetContainer.appendChild(link);
+					const tweetlink = document.createElement('a');
+					tweetlink.href = tweetUrl;
+					tweetlink.textContent = title;
+					tweetContainer.appendChild(tweetlink);
 
 					embed.innerHTML = '';
 					embed.appendChild(tweetContainer);
@@ -520,6 +521,37 @@ class EmbedManager {
 					} else {
 						// The script will auto-process when loaded
 						this.loadExternalScript('https://platform.twitter.com/widgets.js', 'twitter-widget');
+					}
+					break;
+
+				case 'instagram':
+					// Create an Instagram embed using blockquote format
+					const instagramUrl = this.buildEmbedSrc(embed, src, type);
+					const instagramContainer = document.createElement('blockquote');
+					instagramContainer.className = 'instagram-media';
+					instagramContainer.setAttribute('data-instgrm-captioned', '');
+					instagramContainer.setAttribute('data-instgrm-permalink', instagramUrl);
+					instagramContainer.setAttribute('data-instgrm-version', '14');
+					instagramContainer.style.margin = '0 auto';
+					instagramContainer.style.width = '100%';
+					instagramContainer.style.maxWidth = '540px';
+
+					// Add a link inside the blockquote (required for Instagram's script)
+					const link = document.createElement('a');
+					link.href = instagramUrl;
+					link.textContent = title || 'View this post on Instagram';
+					link.target = '_blank';
+					instagramContainer.appendChild(link);
+
+					embed.innerHTML = '';
+					embed.appendChild(instagramContainer);
+
+					// Load Instagram's embed script and process this container
+					this.loadExternalScript('https://www.instagram.com/embed.js', 'instagram-embed');
+
+					// Need to tell instgrm to process this embed
+					if (window.instgrm) {
+						window.instgrm.Embeds.process();
 					}
 					break;
 
