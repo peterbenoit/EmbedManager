@@ -844,12 +844,11 @@ a:hover {
 	font-weight: 500;
 	transition: all var(--transition-fast);
 	text-align: center;
-}
-
-.preset-btn:hover {
-	background-color: rgba(67, 97, 238, 0.1);
-	border-color: var(--color-primary);
-	color: var(--color-primary);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 80px;
 }
 
 .preset-btn .note {
@@ -869,6 +868,10 @@ a:hover {
 	.demo-output {
 		margin-top: var(--spacing-lg);
 	}
+
+	.preset-grid {
+		grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+	}
 }
 
 @media (max-width: 768px) {
@@ -883,6 +886,19 @@ a:hover {
 	}
 
 	.preset-grid {
-		grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+	}
+}
+
+@media (max-width: 480px) {
+	.preset-grid {
+		grid-template-columns: repeat(2, 1fr);
+		gap: var(--spacing-sm);
+	}
+
+	.preset-btn {
+		padding: var(--spacing-sm);
+		min-height: 70px;
+		font-size: 0.9rem;
 	}
 }

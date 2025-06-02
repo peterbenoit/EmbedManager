@@ -219,11 +219,23 @@ async function initDemoPage() {
 					// Don't auto-generate the embed if it requires a key
 					const keyHelp = document.querySelector('#embed-api-key + .help-text');
 					if (keyHelp) {
-						keyHelp.innerHTML = 'Using a restricted API key protects your quota and prevents unauthorized usage. <a href="https://developers.google.com/maps/documentation/embed/get-api-key" target="_blank">Learn more</a>';
+						keyHelp.innerHTML = '<strong>Great!</strong> Using a restricted API key protects your quota and prevents unauthorized usage. <a href="https://developers.google.com/maps/documentation/embed/get-api-key" target="_blank">Learn more</a>';
 					}
 					apiKeyField.required = true;
 					apiKeyField.focus();
 					return;
+				}
+			}
+
+			// For Twitch, we need to ensure the parent parameter is correctly set
+			if (type === 'twitch') {
+				// Make sure the parent domain matches the current domain
+				const currentDomain = window.location.hostname;
+				if (!src.includes(`parent=${currentDomain}`)) {
+					const newSrc = src.includes('?')
+						? `${src}&parent=${currentDomain}`
+						: `${src}?parent=${currentDomain}`;
+					embedSrc.value = newSrc;
 				}
 			}
 
