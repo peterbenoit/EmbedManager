@@ -2,15 +2,6 @@
     "name": "embed-manager",
     "version": "1.0.0",
     "description": "A versatile JavaScript library for embedding various content types (YouTube, Vimeo, Twitch, CodePen, and websites) with lazy loading capabilities",
-    "main": "dist/embedManager.js",
-    "module": "dist/embedManager.esm.js",
-    "types": "dist/types/index.d.ts",
-    "scripts": {
-        "build": "node build.js",
-        "build:docs": "cp src/lib/embedManager.js docs/assets/js/",
-        "dev": "http-server docs -p 3000 -c-1",
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/peterbenoit/EmbedManager.git"
