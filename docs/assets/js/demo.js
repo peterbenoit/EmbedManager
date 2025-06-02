@@ -10,14 +10,12 @@ console.log('Found elements:', {
 	codeDisplay: !!codeDisplay
 });
 
-// Check if required elements exist
 if (!embedTypeBtns.length || !demoEmbed || !codeDisplay) {
 	console.warn('Demo elements not found - demo functionality disabled', {
 		buttons: embedTypeBtns.length,
 		demoEmbed: !!demoEmbed,
 		codeDisplay: !!codeDisplay
 	});
-	// Don't return, let the rest of the script try to work
 }
 
 const embedConfigs = {
@@ -28,30 +26,30 @@ const embedConfigs = {
 		height: '315px'
 	},
 	vimeo: {
-		src: 'https://player.vimeo.com/video/363802890', // Changed to a working video ID
+		src: 'https://player.vimeo.com/video/363802890',
 		title: 'Vimeo Demo Video',
 		width: '100%',
 		height: '315px',
-		appId: '58479' // This app_id seems to work with video 363802890
+		appId: '58479'
 	},
-	'twitch-live': { // Key for demo logic
-		src: 'https://player.twitch.tv/?channel=monstercat', // Base URL for live channel
+	'twitch-live': {
+		src: 'https://player.twitch.tv/?channel=monstercat',
 		title: 'Twitch Live Stream Demo',
-		type: 'twitch', // Actual data-type for EmbedManager
+		type: 'twitch',
 		width: '100%',
 		height: '315px'
 	},
-	'twitch-clip': { // Key for demo logic
-		src: 'https://clips.twitch.tv/embed?clip=SleepyGiftedPeppermintNerfRedBlaster-KbkBXYt3lOk3jy8-', // Base URL for clip
+	'twitch-clip': {
+		src: 'https://clips.twitch.tv/embed?clip=SleepyGiftedPeppermintNerfRedBlaster-KbkBXYt3lOk3jy8-',
 		title: 'Twitch Clip Demo',
-		type: 'twitch', // Actual data-type for EmbedManager
+		type: 'twitch',
 		width: '100%',
 		height: '315px'
 	},
-	'twitch-vod': { // Key for demo logic
-		src: 'https://player.twitch.tv/?video=2094739091', // Base URL for VOD (example ID)
+	'twitch-vod': {
+		src: 'https://player.twitch.tv/?video=2094739091',
 		title: 'Twitch VOD Demo',
-		type: 'twitch', // Actual data-type for EmbedManager
+		type: 'twitch',
 		width: '100%',
 		height: '315px'
 	},
@@ -64,8 +62,8 @@ const embedConfigs = {
 		defaultTab: 'html,result'
 	},
 	website: {
-		src: 'https://www.uiguy.dev',
-		title: 'Website Demo',
+		src: 'https://www.peterbenoit.com',
+		title: 'Peter Benoit - Website Demo',
 		width: '100%',
 		height: '400px'
 	}
@@ -76,7 +74,6 @@ console.log('Embed configs loaded:', Object.keys(embedConfigs));
 function generateHtmlCode(type, config) {
 	console.log('Generating HTML code for:', type, config);
 
-	// Use config.type for the data-type attribute if present, otherwise use the key 'type'
 	const embedManagerType = config.type || type;
 
 	let attributes = `data-type="${embedManagerType}"
@@ -104,7 +101,7 @@ function generateHtmlCode(type, config) {
 </div>`;
 }
 
-function updateDemo(type) { // 'type' here is the key from embedConfigs (e.g., 'twitch-live')
+function updateDemo(type) {
 	console.log('Updating demo to type:', type);
 
 	const config = embedConfigs[type];
@@ -120,16 +117,13 @@ function updateDemo(type) { // 'type' here is the key from embedConfigs (e.g., '
 
 	console.log('Using config:', config);
 
-	// Clear existing iframe
 	const existingIframe = demoEmbed.querySelector('iframe');
 	if (existingIframe) {
 		console.log('Removing existing iframe');
 		existingIframe.remove();
 	}
 
-	// Update container attributes
 	console.log('Setting attributes on demo embed');
-	// Use config.type for the data-type attribute if present, otherwise use the key 'type'
 	const embedManagerType = config.type || type;
 	demoEmbed.setAttribute('data-type', embedManagerType);
 	demoEmbed.setAttribute('data-src', config.src);
@@ -137,7 +131,6 @@ function updateDemo(type) { // 'type' here is the key from embedConfigs (e.g., '
 	demoEmbed.setAttribute('data-width', config.width);
 	demoEmbed.setAttribute('data-height', config.height);
 
-	// Add CodePen specific attributes
 	if (config.themeId) {
 		demoEmbed.setAttribute('data-theme-id', config.themeId);
 	} else {
@@ -156,39 +149,32 @@ function updateDemo(type) { // 'type' here is the key from embedConfigs (e.g., '
 		demoEmbed.removeAttribute('data-app-id');
 	}
 
-	// Reset loading text
 	demoEmbed.innerHTML = `<p>Loading ${config.title}...</p>`;
 	console.log('Reset demo embed content');
 
-	// Update code display
 	if (codeDisplay) {
 		const htmlCode = generateHtmlCode(type, config);
 		codeDisplay.textContent = htmlCode;
 		console.log('Updated code display');
 
-		// Re-highlight code if Prism is available
 		if (window.Prism && window.Prism.highlightElement) {
 			console.log('Re-highlighting code with Prism');
 			Prism.highlightElement(codeDisplay);
 		}
 	}
 
-	// Try to trigger EmbedManager
 	console.log('Checking for EmbedManager...');
 	if (window.EmbedManager) {
 		console.log('EmbedManager found:', window.EmbedManager);
 
-		// For dynamic demo updates, processContainer is more appropriate
 		if (typeof window.EmbedManager.processContainer === 'function') {
 			console.log('Calling EmbedManager.processContainer() for the demo embed');
 			window.EmbedManager.processContainer(demoEmbed);
 		} else if (typeof window.EmbedManager.init === 'function') {
-			// Fallback, though init() is generally for initial page load
 			console.warn('EmbedManager.processContainer not found, falling back to init(). This might not correctly update the dynamic demo embed.');
 			window.EmbedManager.init();
 		} else {
 			console.log('No suitable EmbedManager method found (processContainer or init), trying manual DOMContentLoaded trigger');
-			// If EmbedManager is available but methods aren't, try to manually trigger
 			const event = new Event('DOMContentLoaded');
 			document.dispatchEvent(event);
 		}
@@ -197,7 +183,6 @@ function updateDemo(type) { // 'type' here is the key from embedConfigs (e.g., '
 	}
 }
 
-// Set up button event listeners
 if (embedTypeBtns.length > 0) {
 	console.log('Setting up button event listeners');
 	embedTypeBtns.forEach((btn, index) => {
@@ -206,11 +191,9 @@ if (embedTypeBtns.length > 0) {
 			const selectedType = this.dataset.type;
 			console.log('Button clicked:', selectedType);
 
-			// Update button states
 			embedTypeBtns.forEach(b => b.classList.remove('active'));
 			this.classList.add('active');
 
-			// Update demo
 			updateDemo(selectedType);
 		});
 	});
@@ -218,7 +201,6 @@ if (embedTypeBtns.length > 0) {
 	console.warn('No embed type buttons found');
 }
 
-// Initialize with YouTube by default
 console.log('Initializing demo with YouTube');
 updateDemo('youtube');
 
