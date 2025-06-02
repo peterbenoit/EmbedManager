@@ -3,3 +3,5 @@ package-lock.json
 .vercel
 dist
 .DS_Store
+.log
+.txt

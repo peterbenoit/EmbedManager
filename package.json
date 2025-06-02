@@ -1,33 +1,36 @@
 {
-    "name": "repo-widget",
-    "version": "1.1.0",
-    "description": "A professional GitHub repository display widget for showcasing repositories on any website",
-    "main": "dist/repoWidget.js",
-    "module": "dist/repoWidget.esm.js",
+    "name": "embed-manager",
+    "version": "1.0.0",
+    "description": "A versatile JavaScript library for embedding various content types (YouTube, Vimeo, Twitch, CodePen, and websites) with lazy loading capabilities",
+    "main": "dist/embedManager.js",
+    "module": "dist/embedManager.esm.js",
     "types": "dist/types/index.d.ts",
     "scripts": {
         "build": "node build.js",
-        "build:docs": "cp src/lib/repoWidget.js docs/assets/js/",
+        "build:docs": "cp src/lib/embedManager.js docs/assets/js/",
         "dev": "http-server docs -p 3000 -c-1",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/peterbenoit/RepoWidget.git"
+        "url": "git+https://github.com/peterbenoit/EmbedManager.git"
     },
     "keywords": [
-        "github",
-        "repositories",
-        "widget",
-        "portfolio",
-        "showcase"
+        "embed",
+        "iframe",
+        "lazy-loading",
+        "youtube",
+        "vimeo",
+        "twitch",
+        "codepen",
+        "website-embed"
     ],
     "author": "Peter Benoit",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/peterbenoit/RepoWidget/issues"
+        "url": "https://github.com/peterbenoit/EmbedManager/issues"
     },
-    "homepage": "https://github.com/peterbenoit/RepoWidget#readme",
+    "homepage": "https://github.com/peterbenoit/EmbedManager#readme",
     "devDependencies": {
         "fs-extra": "^11.1.0",
         "http-server": "^14.1.1",

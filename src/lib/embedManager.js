@@ -12,6 +12,7 @@
  * - Support for multiple content types (YouTube, Vimeo, Twitch, CodePen, and websites)
  * - Sandbox attribute for website embeds to enhance security
  * - Configurable iframe titles for accessibility
+ * - Handles Vimeo unlisted/private privacy hash via optional `data-hash` attribute
  *
  * Usage:
  * - Include the HTML structure with the 'embed-container' class and appropriate data attributes.
@@ -51,9 +52,11 @@ class EmbedManager {
 
 		// Create iframe element
 		const iframe = document.createElement('iframe');
-		iframe.allow = 'fullscreen';
+		iframe.allow = 'autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media';
 		iframe.loading = 'lazy';
 		iframe.title = title;
+		iframe.allowfullscreen = true;
+		iframe.frameBorder = '0';
 
 		// Handle CodePen-specific attributes
 		if (type === 'codepen') {
@@ -66,15 +69,46 @@ class EmbedManager {
 			console.log(codepenUrl);
 			iframe.src = codepenUrl;
 		} else {
-			iframe.src = src;
+			// Preserve full URL and append Vimeo privacy hash if provided
+			let finalSrc = src;
+
+			if (type === 'vimeo') {
+				// Ensure Vimeo URL has proper parameters
+				const hash = embed.getAttribute('data-hash');
+				if (hash && !src.includes('h=')) {
+					const sep = src.includes('?') ? '&' : '?';
+					finalSrc = `${src}${sep}h=${hash}`;
+				}
+
+				// Add common Vimeo parameters if not already present
+				const commonParams = ['badge=0', 'autopause=0', 'player_id=0'];
+
+				// Add app_id if provided as data attribute
+				const appId = embed.getAttribute('data-app-id');
+				if (appId) {
+					commonParams.push(`app_id=${appId}`);
+				}
+
+				commonParams.forEach(param => {
+					const paramName = param.split('=')[0];
+					if (!finalSrc.includes(paramName + '=')) {
+						const sep = finalSrc.includes('?') ? '&' : '?';
+						finalSrc = `${finalSrc}${sep}${param}`;
+					}
+				});
+			} else if (type === 'twitch') {
+				const parentDomain = window.location.hostname;
+				// Twitch embed URLs (channel, video, clip) already contain a '?'
+				// so we append parent with '&'
+				finalSrc = `${finalSrc}&parent=${parentDomain}`;
+			}
+
+			iframe.src = finalSrc;
 		}
 
 		// For website embeds, set sandbox attributes for security
-		// - allow-scripts: Allows running scripts inside the iframe (could be risky).
-		// - allow-forms: Allows the iframe to submit forms.
-		// - allow-same-origin: Allows requests to be made as if they’re from the same origin, useful for certain functionality but could expose cross-origin risks.
 		if (type === 'website') {
-			iframe.sandbox = 'allow-scripts allow-same-origin';
+			iframe.sandbox = 'allow-scripts allow-same-origin allow-forms';
 		}
 
 		// Inject iframe and remove placeholder
@@ -96,7 +130,14 @@ class EmbedManager {
 		// Observe each embed container
 		embeds.forEach(embed => observer.observe(embed));
 	}
+
+	// Add method to process a single container (for demo functionality)
+	processContainer(container) {
+		if (container && container.classList.contains('embed-container')) {
+			this.lazyLoadEmbed(container);
+		}
+	}
 }
 
-// Initialize EmbedManager
-new EmbedManager();
+// Initialize EmbedManager and expose it globally for demo functionality
+window.EmbedManager = new EmbedManager();
