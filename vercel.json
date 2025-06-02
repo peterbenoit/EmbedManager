@@ -1,0 +1,6 @@
+{
+    "version": 2,
+    "outputDirectory": "docs",
+    "public": true,
+    "cleanUrls": true
+}

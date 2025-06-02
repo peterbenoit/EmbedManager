@@ -1,0 +1,6 @@
+<a href="https://www.uiguy.dev" rel="author" class="seo-author-link">Peter Benoit</a>
+
+<meta name="author" content="Peter Benoit" />
+
+
+https://peterbenoit.com/js/badge.js
