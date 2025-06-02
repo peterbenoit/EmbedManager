@@ -73,12 +73,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 
 	// Demo page functionality - if on demo page
-	const demoForm = document.getElementById('demo-form');
-	if (demoForm) {
-		demoForm.addEventListener('submit', function (e) {
-			e.preventDefault();
-			generateEmbed();
-		});
+	if (document.querySelector('.demo-page')) {
+		initDemoPage();
 	}
 
 	// Example page code copy buttons
@@ -148,6 +144,291 @@ function generateEmbed() {
 		previewContainer.appendChild(container);
 
 		// Process the container with EmbedManager
+		if (window.EmbedManager) {
+			window.EmbedManager.processContainer(container);
+		}
+	}
+}
+
+// Demo page functionality
+function initDemoPage() {
+	const embedForm = document.getElementById('embed-form');
+	const embedType = document.getElementById('embed-type');
+	const embedSrc = document.getElementById('embed-src');
+	const embedTitle = document.getElementById('embed-title');
+	const embedWidth = document.getElementById('embed-width');
+	const embedAspect = document.getElementById('embed-aspect');
+	const embedAutoplay = document.getElementById('embed-autoplay');
+	const dynamicFields = document.getElementById('dynamic-fields');
+	const previewContainer = document.getElementById('embed-preview');
+	const codeOutput = document.getElementById('code-output');
+	const copyButton = document.getElementById('copy-code');
+	const resetButton = document.getElementById('reset-demo');
+	const presetButtons = document.querySelectorAll('.preset-btn');
+
+	// Handle form submission
+	embedForm.addEventListener('submit', function (e) {
+		e.preventDefault();
+		generateEmbed();
+	});
+
+	// Reset form
+	resetButton.addEventListener('click', function () {
+		embedForm.reset();
+		previewContainer.innerHTML = '<div class="placeholder-message"><p>Your embed will appear here</p></div>';
+		codeOutput.textContent = '<!-- Fill out the form to generate your embed code -->';
+		Prism.highlightElement(codeOutput);
+		dynamicFields.innerHTML = '';
+	});
+
+	// Copy code button
+	copyButton.addEventListener('click', function () {
+		const codeToCopy = codeOutput.textContent;
+		navigator.clipboard.writeText(codeToCopy).then(() => {
+			const originalText = copyButton.textContent;
+			copyButton.textContent = 'Copied!';
+			setTimeout(() => {
+				copyButton.textContent = originalText;
+			}, 2000);
+		});
+	});
+
+	// Handle embed type changes to show relevant fields
+	embedType.addEventListener('change', function () {
+		updateDynamicFields(this.value);
+	});
+
+	// Handle preset buttons
+	presetButtons.forEach(button => {
+		button.addEventListener('click', function () {
+			const type = this.getAttribute('data-type');
+			const src = this.getAttribute('data-src');
+			const title = this.getAttribute('data-title');
+
+			embedType.value = type;
+			embedSrc.value = src;
+			embedTitle.value = title || `${type.charAt(0).toUpperCase() + type.slice(1)} Demo`;
+
+			updateDynamicFields(type);
+			generateEmbed();
+		});
+	});
+
+	// Update dynamic fields based on embed type
+	function updateDynamicFields(type) {
+		dynamicFields.innerHTML = '';
+
+		switch (type) {
+			case 'youtube':
+				addField('checkbox', 'embed-modest', 'Use modest branding', true);
+				break;
+
+			case 'vimeo':
+				addField('text', 'embed-hash', 'Privacy Hash (for private videos)');
+				break;
+
+			case 'codepen':
+				addField('select', 'embed-tab', 'Default Tab', null, [
+					{ value: 'result', label: 'Result' },
+					{ value: 'html', label: 'HTML' },
+					{ value: 'css', label: 'CSS' },
+					{ value: 'js', label: 'JavaScript' }
+				]);
+				addField('checkbox', 'embed-editable', 'Editable');
+				break;
+
+			case 'twitter':
+			case 'x':
+				addField('select', 'embed-theme', 'Theme', null, [
+					{ value: 'light', label: 'Light' },
+					{ value: 'dark', label: 'Dark' }
+				]);
+				break;
+
+			case 'soundcloud':
+				addField('color', 'embed-color', 'Player Color', '#ff5500');
+				addField('checkbox', 'embed-comments', 'Show Comments', true);
+				break;
+
+			case 'maps':
+				addField('text', 'embed-api-key', 'Google Maps API Key (optional)');
+				break;
+		}
+	}
+
+	// Helper to add dynamic form fields
+	function addField(type, id, label, defaultValue = null, options = null) {
+		const fieldContainer = document.createElement('div');
+		fieldContainer.className = type === 'checkbox' ? 'form-group checkbox' : 'form-group';
+
+		if (type === 'checkbox') {
+			const input = document.createElement('input');
+			input.type = 'checkbox';
+			input.id = id;
+			input.name = id;
+			if (defaultValue) input.checked = true;
+
+			const labelElement = document.createElement('label');
+			labelElement.htmlFor = id;
+			labelElement.textContent = label;
+
+			fieldContainer.appendChild(input);
+			fieldContainer.appendChild(labelElement);
+		}
+		else if (type === 'select') {
+			const labelElement = document.createElement('label');
+			labelElement.htmlFor = id;
+			labelElement.textContent = label;
+
+			const select = document.createElement('select');
+			select.id = id;
+			select.name = id;
+
+			options.forEach(option => {
+				const optElement = document.createElement('option');
+				optElement.value = option.value;
+				optElement.textContent = option.label;
+				if (defaultValue === option.value) optElement.selected = true;
+				select.appendChild(optElement);
+			});
+
+			fieldContainer.appendChild(labelElement);
+			fieldContainer.appendChild(select);
+		}
+		else {
+			const labelElement = document.createElement('label');
+			labelElement.htmlFor = id;
+			labelElement.textContent = label;
+
+			const input = document.createElement('input');
+			input.type = type;
+			input.id = id;
+			input.name = id;
+			if (defaultValue) input.value = defaultValue;
+
+			fieldContainer.appendChild(labelElement);
+			fieldContainer.appendChild(input);
+		}
+
+		dynamicFields.appendChild(fieldContainer);
+	}
+
+	// Generate embed
+	function generateEmbed() {
+		const type = embedType.value;
+		const src = embedSrc.value;
+		const title = embedTitle.value || 'Embedded content';
+		const width = embedWidth.value || '100%';
+		const aspectRatio = embedAspect.value;
+		const autoplay = embedAutoplay.checked;
+
+		if (!type || !src) {
+			alert('Please select an embed type and provide a source URL.');
+			return;
+		}
+
+		// Build attributes string
+		let attributes = `data-type="${type}"
+     data-src="${src}"
+     data-title="${title}"
+     data-aspect-ratio="${aspectRatio}"`;
+
+		if (autoplay) {
+			attributes += `\n     data-autoplay="true"`;
+		}
+
+		// Add type-specific attributes
+		switch (type) {
+			case 'codepen':
+				const tab = document.getElementById('embed-tab')?.value;
+				const editable = document.getElementById('embed-editable')?.checked;
+				if (tab) attributes += `\n     data-default-tab="${tab}"`;
+				if (editable) attributes += `\n     data-editable="true"`;
+				break;
+
+			case 'vimeo':
+				const hash = document.getElementById('embed-hash')?.value;
+				if (hash) attributes += `\n     data-hash="${hash}"`;
+				break;
+
+			case 'twitter':
+			case 'x':
+				const theme = document.getElementById('embed-theme')?.value;
+				if (theme) attributes += `\n     data-theme="${theme}"`;
+				break;
+
+			case 'soundcloud':
+				const color = document.getElementById('embed-color')?.value;
+				const comments = document.getElementById('embed-comments')?.checked;
+				if (color) attributes += `\n     data-color="${color.replace('#', '')}"`;
+				if (!comments) attributes += `\n     data-show-comments="false"`;
+				break;
+
+			case 'maps':
+				const apiKey = document.getElementById('embed-api-key')?.value;
+				if (apiKey) attributes += `\n     data-api-key="${apiKey}"`;
+				break;
+		}
+
+		// Generate HTML
+		const embedHTML = `<div class="embed-container" ${attributes}>
+</div>`;
+
+		// Update code display
+		codeOutput.textContent = embedHTML;
+		Prism.highlightElement(codeOutput);
+
+		// Clear and update preview
+		previewContainer.innerHTML = '';
+
+		// Create embed container
+		const container = document.createElement('div');
+		container.className = 'embed-container';
+		container.setAttribute('data-type', type);
+		container.setAttribute('data-src', src);
+		container.setAttribute('data-title', title);
+		container.setAttribute('data-aspect-ratio', aspectRatio);
+
+		if (autoplay) {
+			container.setAttribute('data-autoplay', 'true');
+		}
+
+		// Add type-specific attributes to the container
+		switch (type) {
+			case 'codepen':
+				const tab = document.getElementById('embed-tab')?.value;
+				const editable = document.getElementById('embed-editable')?.checked;
+				if (tab) container.setAttribute('data-default-tab', tab);
+				if (editable) container.setAttribute('data-editable', 'true');
+				break;
+
+			case 'vimeo':
+				const hash = document.getElementById('embed-hash')?.value;
+				if (hash) container.setAttribute('data-hash', hash);
+				break;
+
+			case 'twitter':
+			case 'x':
+				const theme = document.getElementById('embed-theme')?.value;
+				if (theme) container.setAttribute('data-theme', theme);
+				break;
+
+			case 'soundcloud':
+				const color = document.getElementById('embed-color')?.value;
+				const comments = document.getElementById('embed-comments')?.checked;
+				if (color) container.setAttribute('data-color', color.replace('#', ''));
+				if (!comments) container.setAttribute('data-show-comments', 'false');
+				break;
+
+			case 'maps':
+				const apiKey = document.getElementById('embed-api-key')?.value;
+				if (apiKey) container.setAttribute('data-api-key', apiKey);
+				break;
+		}
+
+		previewContainer.appendChild(container);
+
+		// Process with EmbedManager
 		if (window.EmbedManager) {
 			window.EmbedManager.processContainer(container);
 		}
