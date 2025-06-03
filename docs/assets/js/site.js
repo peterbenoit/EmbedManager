@@ -393,14 +393,15 @@ async function initDemoPage() {
 			return;
 		}
 
-		// Build attributes string
-		let attributes = `data-type="${type}"
-     data-src="${src}"
-     data-title="${title}"
-     data-aspect-ratio="${aspectRatio}"`;
+		// Build attributes string - formatting for readability while keeping width controlled
+		let attributes = [];
+		attributes.push(`data-type="${type}"`);
+		attributes.push(`data-src="${src}"`);
+		attributes.push(`data-title="${title}"`);
+		attributes.push(`data-aspect-ratio="${aspectRatio}"`);
 
 		if (autoplay) {
-			attributes += `\n     data-autoplay="true"`;
+			attributes.push(`data-autoplay="true"`);
 		}
 
 		// Add type-specific attributes
@@ -408,26 +409,26 @@ async function initDemoPage() {
 			case 'codepen':
 				const tab = document.getElementById('embed-tab')?.value;
 				const editable = document.getElementById('embed-editable')?.checked;
-				if (tab) attributes += `\n     data-default-tab="${tab}"`;
-				if (editable) attributes += `\n     data-editable="true"`;
+				if (tab) attributes.push(`data-default-tab="${tab}"`);
+				if (editable) attributes.push(`data-editable="true"`);
 				break;
 
 			case 'vimeo':
 				const hash = document.getElementById('embed-hash')?.value;
-				if (hash) attributes += `\n     data-hash="${hash}"`;
+				if (hash) attributes.push(`data-hash="${hash}"`);
 				break;
 
 			case 'twitter':
 			case 'x':
 				const theme = document.getElementById('embed-theme')?.value;
-				if (theme) attributes += `\n     data-theme="${theme}"`;
+				if (theme) attributes.push(`data-theme="${theme}"`);
 				break;
 
 			case 'soundcloud':
 				const color = document.getElementById('embed-color')?.value;
 				const comments = document.getElementById('embed-comments')?.checked;
-				if (color) attributes += `\n     data-color="${color.replace('#', '')}"`;
-				if (!comments) attributes += `\n     data-show-comments="false"`;
+				if (color) attributes.push(`data-color="${color.replace('#', '')}"`);
+				if (!comments) attributes.push(`data-show-comments="false"`);
 				break;
 
 			case 'maps':
@@ -437,13 +438,13 @@ async function initDemoPage() {
 					alert('A Google Maps API key is required.');
 					return;
 				}
-				attributes += `\n     data-api-key="${apiKey}"`;
+				attributes.push(`data-api-key="${apiKey}"`);
 				break;
 		}
 
-		// Generate HTML
-		const embedHTML = `<div class="embed-container" ${attributes}>
-</div>`;
+		// Generate HTML with better formatting that works on smaller screens
+		const attributesStr = attributes.join('\n     ');
+		const embedHTML = `<div class="embed-container" ${attributesStr}>\n</div>`;
 
 		// Update code display
 		codeOutput.textContent = embedHTML;
@@ -452,7 +453,7 @@ async function initDemoPage() {
 		// Clear and update preview
 		previewContainer.innerHTML = '';
 
-		// Create embed container
+		// Create embed container with aspect ratio matching the form
 		const container = document.createElement('div');
 		container.className = 'embed-container';
 		container.setAttribute('data-type', type);
@@ -460,9 +461,8 @@ async function initDemoPage() {
 		container.setAttribute('data-title', title);
 		container.setAttribute('data-aspect-ratio', aspectRatio);
 
-		if (autoplay) {
-			container.setAttribute('data-autoplay', 'true');
-		}
+		// Set aspect ratio style directly to maintain consistent appearance
+		container.style.aspectRatio = aspectRatio.replace('/', '/');
 
 		// Add type-specific attributes to the container
 		switch (type) {

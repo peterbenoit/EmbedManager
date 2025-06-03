@@ -282,6 +282,24 @@ a:hover {
 	text-decoration: none;
 }
 
+.btn-small {
+	font-size: 0.9rem;
+	padding: 6px 12px;
+	margin-top: var(--spacing-sm);
+	background-color: var(--color-primary);
+	color: white;
+	border: none;
+	border-radius: var(--border-radius-sm);
+	cursor: pointer;
+	transition: background-color var(--transition-fast);
+}
+
+.btn-small:hover {
+	background-color: var(--color-primary-dark);
+	color: white;
+	text-decoration: none;
+}
+
 .cta-center {
 	text-align: center;
 	margin-top: var(--spacing-xl);
@@ -786,6 +804,9 @@ a:hover {
 	border-radius: var(--border-radius-lg);
 	padding: var(--spacing-lg);
 	box-shadow: var(--shadow-sm);
+	/* Set a fixed width to prevent resizing */
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .demo-output h3 {
@@ -802,6 +823,22 @@ a:hover {
 	margin-bottom: var(--spacing-lg);
 	overflow: hidden;
 	border: 1px solid var(--color-border);
+	/* Ensure consistent sizing */
+	width: 100%;
+	aspect-ratio: 16/9;
+	position: relative;
+	/* Force consistent dimensions regardless of content */
+	flex: 0 0 auto;
+}
+
+/* Ensure embeds inside the preview maintain proper sizing */
+.embed-preview-container .embed-container {
+	margin: 0;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 
 .placeholder-message {
@@ -815,17 +852,55 @@ a:hover {
 	padding: var(--spacing-md);
 }
 
+.code-wrapper {
+	position: relative;
+	/* Force max width to prevent expanding parent */
+	max-width: 100%;
+}
+
+.demo-output pre {
+	max-width: 100%;
+	overflow-x: auto;
+	white-space: pre;
+	/* Ensure horizontal scrolling for long code */
+	word-break: break-all;
+	word-wrap: break-word;
+}
+
+.demo-output code {
+	display: block;
+	padding: var(--spacing-md);
+	line-height: 1.5;
+	tab-size: 2;
+	/* Prevent code from causing container expansion */
+	width: auto;
+	overflow-x: visible;
+}
+
+/* Format specific embed types to maintain proper sizing */
+[data-type="instagram"] .instagram-media {
+	max-width: 100% !important;
+	width: 100% !important;
+	min-width: auto !important;
+	margin: 0 auto !important;
+}
+
 .btn-small {
 	font-size: 0.9rem;
 	padding: 6px 12px;
 	margin-top: var(--spacing-sm);
+	background-color: var(--color-primary);
+	color: white;
+	border: none;
+	border-radius: var(--border-radius-sm);
+	cursor: pointer;
+	transition: background-color var(--transition-fast);
 }
 
-/* Preset Examples */
-.preset-embeds {
-	margin-top: var(--spacing-xl);
-	padding-top: var(--spacing-xl);
-	border-top: 1px solid var(--color-border);
+.btn-small:hover {
+	background-color: var(--color-primary-dark);
+	color: white;
+	text-decoration: none;
 }
 
 .preset-grid {
@@ -851,6 +926,14 @@ a:hover {
 	min-height: 80px;
 }
 
+.preset-btn:hover {
+	background-color: rgba(67, 97, 238, 0.1);
+	border-color: var(--color-primary);
+	color: var(--color-primary);
+	transform: translateY(-2px);
+	box-shadow: var(--shadow-sm);
+}
+
 .preset-btn .note {
 	display: block;
 	font-size: 0.8rem;
@@ -859,7 +942,7 @@ a:hover {
 	margin-top: 4px;
 }
 
-/* Responsive adjustments for demo page */
+/* Responsive adjustments */
 @media (max-width: 992px) {
 	.demo-container {
 		grid-template-columns: 1fr;
@@ -869,8 +952,10 @@ a:hover {
 		margin-top: var(--spacing-lg);
 	}
 
-	.preset-grid {
-		grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+	.embed-preview-container {
+		/* Keep reasonable height on smaller screens */
+		aspect-ratio: 16/9;
+		min-height: 250px;
 	}
 }
 
@@ -888,6 +973,14 @@ a:hover {
 	.preset-grid {
 		grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
 	}
+
+	.embed-preview-container {
+		min-height: 200px;
+	}
+
+	.demo-output code {
+		font-size: 13px;
+	}
 }
 
 @media (max-width: 480px) {
@@ -900,5 +993,9 @@ a:hover {
 		padding: var(--spacing-sm);
 		min-height: 70px;
 		font-size: 0.9rem;
+	}
+
+	.embed-preview-container {
+		min-height: 180px;
 	}
 }
