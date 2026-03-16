@@ -299,6 +299,33 @@ describe('EmbedManager', () => {
 			});
 		});
 
+		describe('twitter / x', () => {
+			it('converts a bare numeric ID to a twitter.com status URL', () => {
+				const embed = makeEmbed({ 'data-type': 'twitter' });
+				const result = mgr.buildEmbedSrc(embed, '1945230118441328960', 'twitter');
+				expect(result).toBe('https://twitter.com/i/status/1945230118441328960');
+			});
+
+			it('normalizes a full twitter.com URL to twitter.com/i/status/', () => {
+				const embed = makeEmbed({ 'data-type': 'twitter' });
+				const result = mgr.buildEmbedSrc(embed, 'https://twitter.com/peterbenoit/status/1945230118441328960', 'twitter');
+				expect(result).toBe('https://twitter.com/i/status/1945230118441328960');
+			});
+
+			it('normalizes a full x.com URL to twitter.com/i/status/', () => {
+				const embed = makeEmbed({ 'data-type': 'x' });
+				const result = mgr.buildEmbedSrc(embed, 'https://x.com/peterbenoit/status/1945230118441328960', 'x');
+				expect(result).toBe('https://twitter.com/i/status/1945230118441328960');
+			});
+
+			it('returns the src unchanged when no status ID can be extracted', () => {
+				const embed = makeEmbed({ 'data-type': 'twitter' });
+				const src = 'https://twitter.com/peterbenoit';
+				const result = mgr.buildEmbedSrc(embed, src, 'twitter');
+				expect(result).toBe(src);
+			});
+		});
+
 		describe('tiktok', () => {
 			it('converts a standard TikTok video URL to embed URL', () => {
 				const embed = makeEmbed({ 'data-type': 'tiktok' });

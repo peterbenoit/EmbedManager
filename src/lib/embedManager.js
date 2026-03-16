@@ -234,12 +234,18 @@ class EmbedManager {
 			case 'twitter':
 			case 'x':
 				// Twitter/X embeds need special handling with their widget.js
-				// We'll return the src as is, but we need to load their script
 				this.loadExternalScript('https://platform.twitter.com/widgets.js', 'twitter-widget');
 
-				// If the source is just a tweet ID, construct the proper URL
 				if (/^\d+$/.test(src)) {
+					// Bare numeric tweet ID
 					finalSrc = `https://twitter.com/i/status/${src}`;
+				} else {
+					// Full URL (x.com or twitter.com) — extract status ID and
+					// normalize to twitter.com so widgets.js processes it reliably
+					const statusMatch = src.match(/\/status\/(\d+)/);
+					if (statusMatch) {
+						finalSrc = `https://twitter.com/i/status/${statusMatch[1]}`;
+					}
 				}
 				break;
 
