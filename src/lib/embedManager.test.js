@@ -30,11 +30,17 @@ function makeEmbed(attrs = {}) {
 describe('EmbedManager', () => {
 	let mgr;
 
+	// Suppress console.error globally — tests that need to assert on it use their own spy.
 	beforeEach(() => {
+		jest.spyOn(console, 'error').mockImplementation(() => { });
 		document.head.innerHTML = '';
 		document.body.innerHTML = '';
 		jest.clearAllMocks();
 		mgr = new EmbedManager();
+	});
+
+	afterEach(() => {
+		jest.restoreAllMocks();
 	});
 
 	// ── Constructor ────────────────────────────────────────────────────────────
@@ -137,7 +143,6 @@ describe('EmbedManager', () => {
 			const spy = jest.spyOn(console, 'error').mockImplementation(() => { });
 			mgr.showError(makeEmbed(), 'oops');
 			expect(spy).toHaveBeenCalledWith('EmbedManager Error: oops');
-			spy.mockRestore();
 		});
 
 		it('replaces existing container content', () => {
