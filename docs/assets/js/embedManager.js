@@ -361,11 +361,9 @@ class EmbedManager {
 			case 'github':
 			case 'gist':
 				// GitHub Gists are embedded via script, not iframe
-				// We'll handle this specially after returning
-				// If it's a full Gist URL, extract the Gist ID
-				if (finalSrc.includes('github.com') && finalSrc.includes('/gist/')) {
-					const gistId = finalSrc.split('/').pop();
-					finalSrc = `https://gist.github.com/${gistId}.js`;
+				// Append .js to the full path (preserves username/gistid structure)
+				if (finalSrc.includes('gist.github.com') && !finalSrc.endsWith('.js')) {
+					finalSrc = finalSrc.replace(/\/?$/, '') + '.js';
 				}
 				break;
 
@@ -556,15 +554,40 @@ class EmbedManager {
 					break;
 
 				case 'gist':
-				case 'github':
-					// GitHub Gists use script tags
+				case 'github': {
 					const gistUrl = this.buildEmbedSrc(embed, src, type);
-					const gistScript = document.createElement('script');
-					gistScript.src = gistUrl;
+
+					// Gist scripts use document.write(), which is blocked after page load.
+					// Using srcdoc gives the script a fresh document context to write into.
+					const iframe = document.createElement('iframe');
+					// Override the .embed-container iframe CSS (position:absolute, height:100%)
+					// so the gist can grow to its natural text height.
+					iframe.style.cssText = 'width:100%;border:none;display:block;position:static;height:200px;';
+					iframe.setAttribute('aria-label', title);
+					iframe.srcdoc = `<!DOCTYPE html><html><head><base target="_parent"><style>body{margin:0;font-family:sans-serif}</style></head><body><script src="${gistUrl}"><\/script></body></html>`;
+
+					// Reset container — gists are text, not video; aspect-ratio box is wrong.
+					embed.style.aspectRatio = 'unset';
+					embed.style.height = 'auto';
+					embed.style.display = 'block';
+					embed.style.overflow = 'visible';
+
+					iframe.addEventListener('load', () => {
+						embed.querySelector('.embed-placeholder')?.remove();
+						// srcdoc is same-origin — read the rendered height and resize the iframe.
+						try {
+							const contentHeight = iframe.contentDocument?.documentElement?.scrollHeight;
+							if (contentHeight) iframe.style.height = contentHeight + 'px';
+						} catch (e) { /* cross-origin guard */ }
+					});
+					iframe.addEventListener('error', () => {
+						this.showError(embed, 'Failed to load GitHub Gist. Ensure the Gist is public and the URL is correct.');
+					});
 
 					embed.innerHTML = '';
-					embed.appendChild(gistScript);
+					embed.appendChild(iframe);
 					break;
+				}
 			}
 		} catch (error) {
 			this.showError(embed, error.message);
