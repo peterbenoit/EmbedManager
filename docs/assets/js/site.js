@@ -366,16 +366,8 @@ async function initDemoPage() {
 		dynamicFields.appendChild(fieldContainer);
 	}
 
-	// Load Google Maps API key from file if available
+	// API key must be entered manually in the UI — no server-side file used
 	async function loadApiKey() {
-		try {
-			const response = await fetch('/api.key');
-			if (response.ok) {
-				return await response.text();
-			}
-		} catch (e) {
-			console.log('No API key file available');
-		}
 		return '';
 	}
 
