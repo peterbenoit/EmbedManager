@@ -445,6 +445,9 @@ async function initDemoPage() {
 		// Clear and update preview
 		previewContainer.innerHTML = '';
 
+		// Update the preview wrapper's aspect ratio so the visual shape reflects the selection
+		previewContainer.style.aspectRatio = aspectRatio;
+
 		// Create embed container with aspect ratio matching the form
 		const container = document.createElement('div');
 		container.className = 'embed-container';
@@ -452,9 +455,6 @@ async function initDemoPage() {
 		container.setAttribute('data-src', src);
 		container.setAttribute('data-title', title);
 		container.setAttribute('data-aspect-ratio', aspectRatio);
-
-		// Set aspect ratio style directly to maintain consistent appearance
-		container.style.aspectRatio = aspectRatio.replace('/', '/');
 
 		// Add type-specific attributes to the container
 		switch (type) {
