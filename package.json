@@ -1,6 +1,6 @@
 {
 	"name": "embed-manager",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "A versatile JavaScript library for embedding various content types (YouTube, Vimeo, Twitch, CodePen, and websites) with lazy loading capabilities",
 	"main": "src/lib/embedManager.js",
 	"browser": "dist/embedManager.min.js",
