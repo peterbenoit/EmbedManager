@@ -26,6 +26,7 @@ class EmbedManager {
 	constructor(options = {}) {
 		this.options = {
 			rootMargin: '200px 0px',
+			embedTimeout: 15000, // ms before a special embed is declared failed
 			...options
 		};
 		this.injectCSS();
@@ -427,8 +428,17 @@ class EmbedManager {
 	handleSpecialEmbed(embed, type) {
 		const src = embed.getAttribute('data-src');
 		const title = embed.getAttribute('data-title') || 'Untitled Embed';
+		const timeoutMs = this.options.embedTimeout;
 
-		// Show loading state
+		// twitter/x may use a plain numeric tweet ID instead of a full URL
+		if (type !== 'twitter' && type !== 'x') {
+			if (!src || !this.isValidUrl(src)) {
+				this.showError(embed, `Invalid ${type} source URL`);
+				return;
+			}
+		}
+
+		// Show loading placeholder
 		const loadingMessage = document.createElement('div');
 		loadingMessage.className = 'embed-placeholder';
 		loadingMessage.setAttribute('aria-live', 'polite');
@@ -439,7 +449,7 @@ class EmbedManager {
 		try {
 			switch (type) {
 				case 'twitter':
-				case 'x':
+				case 'x': {
 					// Create a blockquote for Twitter to transform
 					const tweetUrl = this.buildEmbedSrc(embed, src, type);
 					const tweetContainer = document.createElement('blockquote');
@@ -455,16 +465,24 @@ class EmbedManager {
 					embed.innerHTML = '';
 					embed.appendChild(tweetContainer);
 
-					// Initialize Twitter widgets
 					if (window.twttr && window.twttr.widgets) {
 						window.twttr.widgets.load(embed);
 					} else {
-						// The script will auto-process when loaded
 						this.loadExternalScript('https://platform.twitter.com/widgets.js', 'twitter-widget');
 					}
-					break;
 
-				case 'instagram':
+					// Twitter widget.js replaces the blockquote with an <iframe> on success
+					if (timeoutMs > 0) {
+						setTimeout(() => {
+							if (!embed.querySelector('iframe')) {
+								this.showError(embed, 'Tweet failed to load. Check that the URL is correct and the tweet is publicly accessible.');
+							}
+						}, timeoutMs);
+					}
+					break;
+				}
+
+				case 'instagram': {
 					// Create an Instagram embed using blockquote format
 					const instagramUrl = this.buildEmbedSrc(embed, src, type);
 					const instagramContainer = document.createElement('blockquote');
@@ -476,7 +494,6 @@ class EmbedManager {
 					instagramContainer.style.width = '100%';
 					instagramContainer.style.maxWidth = '540px';
 
-					// Add a link inside the blockquote (required for Instagram's script)
 					const link = document.createElement('a');
 					link.href = instagramUrl;
 					link.textContent = title || 'View this post on Instagram';
@@ -486,25 +503,62 @@ class EmbedManager {
 					embed.innerHTML = '';
 					embed.appendChild(instagramContainer);
 
-					// Load Instagram's embed script and process this container
 					this.loadExternalScript('https://www.instagram.com/embed.js', 'instagram-embed');
 
-					// Need to tell instgrm to process this embed
 					if (window.instgrm) {
 						window.instgrm.Embeds.process();
 					}
+
+					// Instagram embed.js replaces the blockquote with an <iframe> on success
+					if (timeoutMs > 0) {
+						setTimeout(() => {
+							if (!embed.querySelector('iframe')) {
+								this.showError(embed, 'Instagram embed failed to load. Check that the URL is correct and the post is publicly accessible.');
+							}
+						}, timeoutMs);
+					}
 					break;
+				}
 
 				case 'gist':
-				case 'github':
-					// GitHub Gists use script tags
+				case 'github': {
 					const gistUrl = this.buildEmbedSrc(embed, src, type);
-					const gistScript = document.createElement('script');
-					gistScript.src = gistUrl;
+
+					// Gist scripts use document.write(), which is blocked after page load.
+					// Using srcdoc gives the script a fresh document context to write into.
+					const iframe = document.createElement('iframe');
+					iframe.style.width = '100%';
+					iframe.style.border = 'none';
+					iframe.style.minHeight = '100px';
+					iframe.setAttribute('aria-label', title);
+					iframe.srcdoc = `<!DOCTYPE html><html><head><base target="_parent"><style>body{margin:0;font-family:sans-serif}</style></head><body><script src="${gistUrl}"><\/script></body></html>`;
+
+					let settled = false;
+					let timeoutId = null;
+
+					iframe.addEventListener('load', () => {
+						settled = true;
+						if (timeoutId) clearTimeout(timeoutId);
+						embed.querySelector('.embed-placeholder')?.remove();
+					});
+					iframe.addEventListener('error', () => {
+						settled = true;
+						if (timeoutId) clearTimeout(timeoutId);
+						this.showError(embed, 'Failed to load GitHub Gist. Ensure the Gist is public and the URL is correct.');
+					});
+
+					if (timeoutMs > 0) {
+						timeoutId = setTimeout(() => {
+							if (!settled) {
+								this.showError(embed, 'GitHub Gist timed out. Ensure the Gist is public and the URL is correct.');
+							}
+						}, timeoutMs);
+					}
 
 					embed.innerHTML = '';
-					embed.appendChild(gistScript);
+					embed.appendChild(iframe);
 					break;
+				}
 			}
 		} catch (error) {
 			this.showError(embed, error.message);

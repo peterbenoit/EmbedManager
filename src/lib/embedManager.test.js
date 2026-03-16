@@ -46,6 +46,10 @@ describe('EmbedManager', () => {
 	// ── Constructor ────────────────────────────────────────────────────────────
 
 	describe('constructor', () => {
+		it('uses default embedTimeout of 15000', () => {
+			expect(mgr.options.embedTimeout).toBe(15000);
+		});
+
 		it('uses default rootMargin when no options are passed', () => {
 			expect(mgr.options.rootMargin).toBe('200px 0px');
 		});
@@ -526,8 +530,25 @@ describe('EmbedManager', () => {
 				const embed = makeEmbed({ 'data-type': type, 'data-src': 'https://example.com' });
 				mgr.lazyLoadEmbed(embed);
 				expect(spy).toHaveBeenCalledWith(embed, type);
-				expect(embed.querySelector('iframe')).toBeNull();
+				// No regular iframe should be created — handleSpecialEmbed is mocked
 				spy.mockRestore();
+			});
+		});
+
+		describe('handleSpecialEmbed URL validation', () => {
+			it('shows an error for an invalid instagram URL', () => {
+				const embed = makeEmbed({ 'data-type': 'instagram', 'data-src': 'not-a-url' });
+				document.body.appendChild(embed);
+				mgr.handleSpecialEmbed(embed, 'instagram');
+				expect(embed.querySelector('.embed-error')).not.toBeNull();
+			});
+
+			it('does NOT validate URL format for twitter (numeric IDs are valid)', () => {
+				const embed = makeEmbed({ 'data-type': 'twitter', 'data-src': '1234567890' });
+				document.body.appendChild(embed);
+				// Should not immediately show an error — numeric IDs are allowed
+				mgr.handleSpecialEmbed(embed, 'twitter');
+				expect(embed.querySelector('.embed-error')).toBeNull();
 			});
 		});
 	});
@@ -640,16 +661,57 @@ describe('EmbedManager', () => {
 		});
 
 		describe('gist / github', () => {
-			it('appends a <script> tag with the .js gist URL', () => {
+			it('shows an error for an invalid gist URL', () => {
+				const embed = makeEmbed({ 'data-type': 'gist', 'data-src': 'not-a-url' });
+				document.body.appendChild(embed);
+				mgr.handleSpecialEmbed(embed, 'gist');
+				expect(embed.querySelector('.embed-error')).not.toBeNull();
+			});
+
+			it('shows an error when data-src is missing', () => {
+				const embed = makeEmbed({ 'data-type': 'gist' });
+				document.body.appendChild(embed);
+				mgr.handleSpecialEmbed(embed, 'gist');
+				expect(embed.querySelector('.embed-error')).not.toBeNull();
+			});
+
+			it('renders an <iframe> with a srcdoc attribute instead of a <script> tag', () => {
 				const embed = makeEmbed({
 					'data-type': 'gist',
 					'data-src': 'https://gist.github.com/user/abc123',
 				});
 				document.body.appendChild(embed);
 				mgr.handleSpecialEmbed(embed, 'gist');
-				const script = embed.querySelector('script');
-				expect(script).not.toBeNull();
-				expect(script.src).toContain('abc123.js');
+				const iframe = embed.querySelector('iframe');
+				expect(iframe).not.toBeNull();
+				expect(iframe.srcdoc).toContain('abc123.js');
+				expect(embed.querySelector('script')).toBeNull();
+			});
+
+			it('fires showError when the gist iframe fires onerror', () => {
+				const embed = makeEmbed({
+					'data-type': 'gist',
+					'data-src': 'https://gist.github.com/user/abc123',
+				});
+				document.body.appendChild(embed);
+				mgr.handleSpecialEmbed(embed, 'gist');
+				const iframe = embed.querySelector('iframe');
+				iframe.dispatchEvent(new Event('error'));
+				expect(embed.querySelector('.embed-error')).not.toBeNull();
+			});
+
+			it('removes the placeholder when the gist iframe fires onload', () => {
+				const embed = makeEmbed({
+					'data-type': 'gist',
+					'data-src': 'https://gist.github.com/user/abc123',
+				});
+				document.body.appendChild(embed);
+				// Inject a stale placeholder to simulate pre-load state
+				embed.innerHTML = '<div class="embed-placeholder">loading</div>';
+				mgr.handleSpecialEmbed(embed, 'gist');
+				const iframe = embed.querySelector('iframe');
+				iframe.dispatchEvent(new Event('load'));
+				expect(embed.querySelector('.embed-placeholder')).toBeNull();
 			});
 		});
 	});
