@@ -885,22 +885,42 @@ a:hover {
 	margin: 0 auto !important;
 }
 
+.code-actions {
+	display: flex;
+	gap: var(--spacing-sm);
+	margin-top: var(--spacing-sm);
+	margin-bottom: var(--spacing-xs);
+	flex-wrap: wrap;
+}
+
 .btn-small {
 	font-size: 0.9rem;
 	padding: 6px 12px;
-	margin-top: var(--spacing-sm);
 	background-color: var(--color-primary);
 	color: white;
 	border: none;
 	border-radius: var(--border-radius-sm);
 	cursor: pointer;
 	transition: background-color var(--transition-fast);
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
 }
 
 .btn-small:hover {
 	background-color: var(--color-primary-dark);
 	color: white;
 	text-decoration: none;
+}
+
+.btn-codepen {
+	background-color: #1e1f26;
+	color: #fff;
+}
+
+.btn-codepen:hover {
+	background-color: #47cf73;
+	color: #1e1f26;
 }
 
 .preset-grid {

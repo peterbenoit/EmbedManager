@@ -181,6 +181,8 @@ async function initDemoPage() {
 		dynamicFields.innerHTML = '';
 	});
 
+	const openCodepenButton = document.getElementById('open-codepen');
+
 	// Copy code button
 	copyButton.addEventListener('click', function () {
 		const codeToCopy = codeOutput.textContent;
@@ -191,6 +193,39 @@ async function initDemoPage() {
 				copyButton.textContent = originalText;
 			}, 2000);
 		});
+	});
+
+	// Open in CodePen button
+	openCodepenButton.addEventListener('click', function () {
+		const code = codeOutput.textContent.trim();
+		if (!code || code.startsWith('<!--')) {
+			alert('Generate an embed first, then open it in CodePen.');
+			return;
+		}
+
+		const data = JSON.stringify({
+			title: 'EmbedManager Demo',
+			html: code,
+			css: 'body { margin: 20px; font-family: sans-serif; }',
+			js: '',
+			js_external: 'https://cdn.jsdelivr.net/npm/embed-manager/dist/embedManager.min.js'
+		});
+
+		const form = document.createElement('form');
+		form.method = 'POST';
+		form.action = 'https://codepen.io/pen/define';
+		form.target = '_blank';
+		form.rel = 'noopener noreferrer';
+
+		const input = document.createElement('input');
+		input.type = 'hidden';
+		input.name = 'data';
+		input.value = data;
+
+		form.appendChild(input);
+		document.body.appendChild(form);
+		form.submit();
+		document.body.removeChild(form);
 	});
 
 	// Handle embed type changes to show relevant fields
