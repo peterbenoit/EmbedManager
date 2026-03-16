@@ -98,77 +98,6 @@ class EmbedManager {
 		this.setupObserver(embeds);
 	}
 
-	// Lazy load embeds when in view
-	lazyLoadEmbed(embed) {
-		const src = embed.getAttribute('data-src');
-		const type = embed.getAttribute('data-type');
-		const title = embed.getAttribute('data-title') || 'Untitled Embed';
-		const width = embed.getAttribute('data-width') || '100%';
-		const height = embed.getAttribute('data-height');
-		const aspectRatio = embed.getAttribute('data-aspect-ratio') || '16/9';
-
-		// Validate source URL
-		if (!src || !this.isValidUrl(src)) {
-			this.showError(embed, 'Invalid embed source URL');
-			return;
-		}
-
-		// Set dimensions or aspect ratio
-		if (height) {
-			embed.style.height = height;
-			embed.style.width = width;
-			// Remove default aspect ratio if explicit dimensions are provided
-			embed.style.aspectRatio = 'unset';
-		} else {
-			embed.style.width = width;
-			embed.style.aspectRatio = aspectRatio;
-		}
-
-		// Show loading state for accessibility
-		const loadingMessage = document.createElement('div');
-		loadingMessage.className = 'embed-placeholder';
-		loadingMessage.setAttribute('aria-live', 'polite');
-		loadingMessage.innerHTML = `<p>Loading ${type} content...</p>`;
-		embed.innerHTML = '';
-		embed.appendChild(loadingMessage);
-
-		// Create iframe element with enhanced attributes
-		const iframe = document.createElement('iframe');
-		iframe.allow = 'autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media';
-		iframe.loading = 'lazy';
-		iframe.title = title;
-		iframe.allowfullscreen = true;
-		iframe.frameBorder = '0';
-		iframe.setAttribute('aria-label', title);
-		iframe.referrerPolicy = 'no-referrer-when-downgrade';
-
-		// Set source based on type
-		try {
-			let finalSrc = this.buildEmbedSrc(embed, src, type);
-			iframe.src = finalSrc;
-
-			// Handle load and error events
-			iframe.addEventListener('load', () => {
-				embed.querySelector('.embed-placeholder')?.remove();
-			});
-
-			iframe.addEventListener('error', () => {
-				this.showError(embed, `Failed to load ${type} content`);
-			});
-
-			// For website embeds, set enhanced sandbox attributes for security
-			if (type === 'website') {
-				iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-popups';
-			}
-
-			// Replace placeholder with iframe
-			embed.appendChild(iframe);
-
-		} catch (error) {
-			this.showError(embed, error.message);
-		}
-	}
-
 	// Set up Intersection Observer for lazy loading
 	setupObserver(embeds) {
 		const observer = new IntersectionObserver((entries) => {
@@ -202,11 +131,11 @@ class EmbedManager {
 		embed.innerHTML = `<div class="embed-error" role="alert">${message}</div>`;
 	}
 
-	// Validate URL format
+	// Validate URL format — only accepts https/http to prevent javascript: URI injection
 	isValidUrl(url) {
 		try {
-			new URL(url);
-			return true;
+			const parsed = new URL(url);
+			return ['https:', 'http:'].includes(parsed.protocol);
 		} catch (e) {
 			return false;
 		}
@@ -217,20 +146,28 @@ class EmbedManager {
 		let finalSrc = src;
 
 		switch (type) {
-			case 'codepen':
+			case 'codepen': {
 				const themeId = embed.getAttribute('data-theme-id') || '';
 				const defaultTab = embed.getAttribute('data-default-tab') || 'result';
 				const editable = embed.getAttribute('data-editable') === 'true' ? 'true' : 'false';
-				const preview = embed.getAttribute('data-preview') === 'true' ? 'embed/preview' : 'embed';
-				finalSrc = `${src}?theme-id=${themeId}&default-tab=${defaultTab}&editable=${editable}&preview=${preview}`;
+				const usePreview = embed.getAttribute('data-preview') === 'true';
+				// Convert /pen/ URL to embed URL and insert /preview/ when requested
+				if (finalSrc.includes('/pen/')) {
+					finalSrc = finalSrc.replace('/pen/', usePreview ? '/embed/preview/' : '/embed/');
+				} else if (usePreview && finalSrc.includes('/embed/') && !finalSrc.includes('/embed/preview/')) {
+					finalSrc = finalSrc.replace('/embed/', '/embed/preview/');
+				}
+				const cSep = finalSrc.includes('?') ? '&' : '?';
+				finalSrc = `${finalSrc}${cSep}theme-id=${themeId}&default-tab=${defaultTab}&editable=${editable}`;
 				break;
+			}
 
-			case 'vimeo':
+			case 'vimeo': {
 				// Handle Vimeo privacy hash
 				const hash = embed.getAttribute('data-hash');
 				if (hash && !src.includes('h=')) {
-					const sep = src.includes('?') ? '&' : '?';
-					finalSrc = `${src}${sep}h=${hash}`;
+					const vSep = src.includes('?') ? '&' : '?';
+					finalSrc = `${src}${vSep}h=${hash}`;
 				}
 
 				// Add common Vimeo parameters
@@ -261,8 +198,9 @@ class EmbedManager {
 					}
 				});
 				break;
+			}
 
-			case 'youtube':
+			case 'youtube': {
 				// Add YouTube parameters for better privacy and user experience
 				const ytParams = [];
 
@@ -284,11 +222,13 @@ class EmbedManager {
 				const ytSep = finalSrc.includes('?') ? '&' : '?';
 				finalSrc = `${finalSrc}${ytSep}${ytParams.join('&')}`;
 				break;
+			}
 
-			case 'twitch':
+			case 'twitch': {
 				const parentDomain = window.location.hostname;
 				finalSrc = `${finalSrc}&parent=${parentDomain}`;
 				break;
+			}
 
 			case 'twitter':
 			case 'x':
@@ -300,8 +240,6 @@ class EmbedManager {
 				if (/^\d+$/.test(src)) {
 					finalSrc = `https://twitter.com/i/status/${src}`;
 				}
-
-				// For Twitter, we'll handle it differently after returning
 				break;
 
 			case 'instagram':
@@ -317,22 +255,23 @@ class EmbedManager {
 						finalSrc = `${finalSrc}&utm_source=ig_embed&utm_campaign=loading`;
 					}
 				}
-				// No longer append /embed as we're using Instagram's preferred blockquote method
 				break;
 
-			case 'tiktok':
+			case 'tiktok': {
 				// TikTok embeds require their script
 				this.loadExternalScript('https://www.tiktok.com/embed.js', 'tiktok-embed');
 
 				// Handle both video URLs and direct embed URLs
 				if (!finalSrc.includes('embed')) {
-					// Convert normal TikTok URL to embed version
-					const tiktokId = finalSrc.split('/').pop();
+					// Strip trailing slash and query string before extracting ID
+					const tiktokPath = finalSrc.replace(/\?.*$/, '').replace(/\/$/, '');
+					const tiktokId = tiktokPath.split('/').pop();
 					finalSrc = `https://www.tiktok.com/embed/v2/${tiktokId}`;
 				}
 				break;
+			}
 
-			case 'soundcloud':
+			case 'soundcloud': {
 				// If only the track URL is provided, convert to embed URL
 				if (!finalSrc.includes('api.soundcloud.com')) {
 					// We'll use color and auto_play from data attributes
@@ -343,8 +282,9 @@ class EmbedManager {
 					finalSrc = `https://w.soundcloud.com/player/?url=${encodeURIComponent(src)}&color=${color}&auto_play=${autoPlay}&hide_related=false&show_comments=${showComments}&show_user=true&show_reposts=false&show_teaser=true`;
 				}
 				break;
+			}
 
-			case 'spotify':
+			case 'spotify': {
 				// Handle different Spotify embed types (track, album, playlist, podcast)
 				if (finalSrc.includes('spotify.com')) {
 					// Convert regular Spotify URL to embed URL
@@ -357,20 +297,20 @@ class EmbedManager {
 					finalSrc = `https://open.spotify.com/embed/${spotifyType}/${spotifyId}`;
 				}
 				break;
+			}
 
 			case 'github':
 			case 'gist':
 				// GitHub Gists are embedded via script, not iframe
-				// We'll handle this specially after returning
-				// If it's a full Gist URL, extract the Gist ID
-				if (finalSrc.includes('github.com') && finalSrc.includes('/gist/')) {
+				// Convert gist.github.com/user/gistid to the .js script URL
+				if (finalSrc.includes('gist.github.com') && !finalSrc.endsWith('.js')) {
 					const gistId = finalSrc.split('/').pop();
 					finalSrc = `https://gist.github.com/${gistId}.js`;
 				}
 				break;
 
 			case 'maps':
-			case 'google-maps':
+			case 'google-maps': {
 				// Handle Google Maps embeds
 				if (!finalSrc.includes('google.com/maps/embed')) {
 					// If it's a regular maps URL, convert to embed URL
@@ -388,6 +328,7 @@ class EmbedManager {
 					}
 				}
 				break;
+			}
 		}
 
 		return finalSrc;
@@ -451,8 +392,7 @@ class EmbedManager {
 		iframe.allow = 'autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media';
 		iframe.loading = 'lazy';
 		iframe.title = title;
-		iframe.allowfullscreen = true;
-		iframe.frameBorder = '0';
+		iframe.setAttribute('allowfullscreen', '');
 		iframe.setAttribute('aria-label', title);
 		iframe.referrerPolicy = 'no-referrer-when-downgrade';
 
@@ -586,5 +526,12 @@ class EmbedManager {
 	}
 }
 
-// Initialize EmbedManager and expose it globally
-window.EmbedManager = new EmbedManager();
+// Export for module environments (testing, Node.js, bundlers)
+if (typeof module !== 'undefined' && module.exports) {
+	module.exports = EmbedManager;
+}
+
+// Auto-initialize for browser environments (non-module script tag usage)
+if (typeof window !== 'undefined' && typeof module === 'undefined') {
+	window.EmbedManager = new EmbedManager();
+}
