@@ -2,6 +2,23 @@
 	"name": "embed-manager",
 	"version": "1.0.0",
 	"description": "A versatile JavaScript library for embedding various content types (YouTube, Vimeo, Twitch, CodePen, and websites) with lazy loading capabilities",
+	"main": "src/lib/embedManager.js",
+	"browser": "dist/embedManager.min.js",
+	"jsdelivr": "dist/embedManager.min.js",
+	"unpkg": "dist/embedManager.min.js",
+	"exports": {
+		".": {
+			"browser": "./dist/embedManager.min.js",
+			"default": "./src/lib/embedManager.js"
+		}
+	},
+	"files": [
+		"src/lib/embedManager.js",
+		"dist/embedManager.js",
+		"dist/embedManager.min.js",
+		"README.md",
+		"LICENSE"
+	],
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/peterbenoit/EmbedManager.git"
@@ -14,14 +31,20 @@
 		"vimeo",
 		"twitch",
 		"codepen",
+		"tiktok",
+		"spotify",
+		"soundcloud",
 		"website-embed"
 	],
 	"author": "Peter Benoit",
 	"license": "MIT",
 	"scripts": {
+		"build": "mkdir -p dist && cp src/lib/embedManager.js dist/embedManager.js && terser src/lib/embedManager.js --compress --mangle --output dist/embedManager.min.js",
 		"test": "jest",
 		"test:watch": "jest --watch",
-		"test:coverage": "jest --coverage"
+		"test:coverage": "jest --coverage",
+		"pack:check": "npm pack --dry-run",
+		"prepublishOnly": "npm test && npm run build"
 	},
 	"jest": {
 		"testEnvironment": "jsdom",
