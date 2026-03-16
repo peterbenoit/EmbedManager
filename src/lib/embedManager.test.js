@@ -408,13 +408,13 @@ describe('EmbedManager', () => {
 			it('converts a gist.github.com URL to a .js script URL', () => {
 				const embed = makeEmbed({ 'data-type': 'gist' });
 				const result = mgr.buildEmbedSrc(embed, 'https://gist.github.com/user/abc123', 'gist');
-				expect(result).toBe('https://gist.github.com/abc123.js');
+				expect(result).toBe('https://gist.github.com/user/abc123.js');
 			});
 
 			it('handles the "github" type alias the same way', () => {
 				const embed = makeEmbed({ 'data-type': 'github' });
 				const result = mgr.buildEmbedSrc(embed, 'https://gist.github.com/user/def456', 'github');
-				expect(result).toBe('https://gist.github.com/def456.js');
+				expect(result).toBe('https://gist.github.com/user/def456.js');
 			});
 		});
 
