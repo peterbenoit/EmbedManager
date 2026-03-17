@@ -167,4 +167,8 @@ git push origin main --tags
 
 ## License
 
-MIT © [Peter Benoit](https://github.com/peterbenoit)
+MIT ©
+
+---
+
+Created by [Peter Benoit](https://www.peterbenoit.com/)
