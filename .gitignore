@@ -6,3 +6,4 @@ dist
 *.log
 *.txt
 .env*.local
+NPM_PORTFOLIO_ATTRIBUTION.md

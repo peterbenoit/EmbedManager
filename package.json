@@ -59,7 +59,7 @@
 	"bugs": {
 		"url": "https://github.com/peterbenoit/EmbedManager/issues"
 	},
-	"homepage": "https://github.com/peterbenoit/EmbedManager#readme",
+	"homepage": "https://peterbenoit.com/embedmanager/",
 	"devDependencies": {
 		"fs-extra": "^11.1.0",
 		"http-server": "^14.1.1",
